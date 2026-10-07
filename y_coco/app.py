@@ -19,6 +19,8 @@ def create_app(config_key):
     from y_coco.user import user_views
 
     # register_blueprintでviewsのuserをアプリへ登録する
-    app.register_blueprint(user_views.user)
+    app.register_blueprint(user_views.user, url_plefix="/user")
+
+    
 
     return app
