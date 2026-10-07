@@ -31,8 +31,8 @@ from flask import (
 )
 from werkzeug.routing import BuildError
 
-from db import get_connection
-from validation import KhForm
+from y_coco.db import get_connection
+from y_coco.validation import KhPostForm
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +138,7 @@ def post_knowhow():
     if userid is None:
         return redirect(_url(LOGIN_ENDPOINT, "/login"))
 
-    form = KhForm()
+    form = KhPostForm()
     if request.method == "GET":
         return render_template(TEMPLATE_POST, form=form)
 

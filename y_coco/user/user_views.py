@@ -33,7 +33,6 @@ user/ 配下に作成済みの各モジュールをインポートして呼び�
     ※ バリデーションエラーのメッセージは設計書の備考どおり、各モジュール側で
       flash() して画面に表示される前提。
 """
-import importlib
 
 from flask import (
     Blueprint,
@@ -51,11 +50,9 @@ from .account import delete, edit, myposts, notification_check, register
 from .event import comment as event_comment
 from .event import post as event_post
 
-# kh-post.py / kh-comment.py はファイル名にハイフンがあり、import文では読み込めないため
-# importlib で読み込む。(ファイル名を kh_post.py / kh_comment.py に変更すれば
-# 通常の import に置き換え可能)
-kh_post = importlib.import_module(".knowhow.kh-post", package=__package__)
-kh_comment = importlib.import_module(".knowhow.kh-comment", package=__package__)
+
+from .knowhow import kh_post
+from .knowhow import kh_comment
 
 user_bp = Blueprint("user", __name__, template_folder="templates")
 

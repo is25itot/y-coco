@@ -41,8 +41,8 @@ from flask import (
 )
 from werkzeug.routing import BuildError
 
-from db import get_connection
-from validation import CommentForm
+from y_coco.db import get_connection
+from y_coco.validation import CommentForm
 
 logger = logging.getLogger(__name__)
 

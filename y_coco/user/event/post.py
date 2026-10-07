@@ -33,8 +33,8 @@ from flask import (
 )
 from werkzeug.routing import BuildError
 
-from db import get_connection
-from validation import PostForm
+from y_coco.db import get_connection
+from y_coco.validation import PostForm
 
 logger = logging.getLogger(__name__)
 
