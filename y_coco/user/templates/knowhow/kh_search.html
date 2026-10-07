@@ -1,0 +1,24 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>ノウハウ検索</h2>
+    <form action="{{ url_for('user.kh_search') }}" method="GET" class="search-form">
+        <input type="text" name="q" placeholder="キーワードを入力…" value="{{ request.args.get('q', '') }}">
+        <button type="submit" class="btn">検索</button>
+    </form>
+
+    <div class="search-results">
+        {% if results %}
+            {% for kh in results %}
+                <div class="card">
+                    <h3><a href="{{ url_for('user.kh_detail', id=kh.id) }}">{{ kh.title }}</a></h3>
+                    <p>投稿者: {{ kh.author_name }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>一致するノウハウは見つかりませんでした。</p>
+        {% endif %}
+    </div>
+</div>
+
+{% include 'footer.html' %}

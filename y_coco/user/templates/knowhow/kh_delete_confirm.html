@@ -1,0 +1,13 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>ノウハウの削除確認</h2>
+    <p>本当にノウハウ「<strong>{{ knowhow.title }}</strong>」を削除してもよろしいですか？</p>
+
+    <form action="{{ url_for('user.kh_delete', id=knowhow.id) }}" method="POST">
+        <button type="submit" class="btn danger">削除実行</button>
+        <a href="{{ url_for('user.kh_detail_organizer', id=knowhow.id) }}" class="btn">キャンセル</a>
+    </form>
+</div>
+
+{% include 'footer.html' %}

@@ -1,0 +1,24 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>イベント検索</h2>
+    <form action="{{ url_for('user.event_search') }}" method="GET" class="search-form">
+        <input type="text" name="q" placeholder="キーワードを入力…" value="{{ request.args.get('q', '') }}">
+        <button type="submit" class="btn">検索</button>
+    </form>
+
+    <div class="search-results">
+        {% if results %}
+            {% for event in results %}
+                <div class="card">
+                    <h3><a href="{{ url_for('user.event_detail', id=event.id) }}">{{ event.title }}</a></h3>
+                    <p>開催日: {{ event.event_date }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>一致するイベントが見つかりませんでした。</p>
+        {% endif %}
+    </div>
+</div>
+
+{% include 'footer.html' %}
