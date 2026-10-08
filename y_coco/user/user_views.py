@@ -87,7 +87,7 @@ def _current_user_id():
     """セッションからユーザーIDを取得する。未ログインなら None。"""
     user = session.get("user")
     if isinstance(user, dict):
-        return user.get("user_id")
+        return user.get("id")
     return user
 
 
