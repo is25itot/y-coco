@@ -48,8 +48,8 @@ CODE_SUCCESS = 0
 CODE_POST_FAILED = 4
 
 TEMPLATE_POST = "knowhow/kh_post.html"
-LOGIN_ENDPOINT = "login"  # login.py 側のエンドポイント名に合わせる
-DETAIL_ENDPOINT = "kh_detail"  # kh_detail.py 側のエンドポイント名に合わせる
+LOGIN_ENDPOINT = "login.login"  # login.py 側のエンドポイント名に合わせる
+DETAIL_ENDPOINT = "kh_detail.show"  # kh_detail.py 側のエンドポイント名に合わせる
 
 INSERT_SQL = (
     "INSERT INTO knowhow (user_id, title, detail, created_at) "
@@ -70,11 +70,8 @@ def _url(endpoint, fallback, **values):
 
 
 def _detail_url(knowhow_post_id):
-    return _url(
-        DETAIL_ENDPOINT,
-        f"/knowhow/{knowhow_post_id}",
-        post_id=knowhow_post_id,
-    )
+    return _url(DETAIL_ENDPOINT, f"/knowhow/{knowhow_post_id}",
+                knowhow_id=knowhow_post_id)
 
 
 def _first(row):
@@ -134,24 +131,21 @@ def save_knowhow_post(userid, title, detail):
 # --- ルート -----------------------------------------------------------
 @knowhow_post_bp.route("/post", methods=["GET", "POST"])
 def post_knowhow():
-    userid = session.get("user")
-    if userid is None:
+    user = session.get("user")
+    if not user:
         return redirect(_url(LOGIN_ENDPOINT, "/login"))
+    userid = user["id"]
 
     form = KhPostForm()
     if request.method == "GET":
         return render_template(TEMPLATE_POST, form=form)
 
-    # バリデーションチェック (er)
-    er = form.validate_on_submit()
-    if not er:
+    if not form.validate_on_submit():
         kh_er_message = "\n".join(_form_error_messages(form))
         return render_template(TEMPLATE_POST, form=form, kh_er_message=kh_er_message)
 
     code, knowhow_post_id = save_knowhow_post(
-        userid,
-        request.form.get("knowhow_title", ""),
-        request.form.get("knowhow_detail", ""),
+        userid, form.title.data, form.kh_post.data
     )
     if code != CODE_SUCCESS:
         return (

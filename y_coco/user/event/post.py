@@ -50,19 +50,14 @@ CODE_SUCCESS = 0
 CODE_POST_FAILED = 3
 
 TEMPLATE_POST = "event/post.html"
-LOGIN_ENDPOINT = "login"  # login.py 側のエンドポイント名に合わせる
-DETAIL_ENDPOINT = "event_detail"  # detail.py 側のエンドポイント名に合わせる
+LOGIN_ENDPOINT = "login.login"  # login.py 側のエンドポイント名に合わせる
+DETAIL_ENDPOINT = "event_detail.show"  # detail.py 側のエンドポイント名に合わせる
+
+MAX_LOCATION = 100
+MAX_ADDRESS = 100
 
 ALLOWED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
-DATETIME_FORMATS = (
-    "%Y-%m-%dT%H:%M",  # <input type="datetime-local">
-    "%Y-%m-%dT%H:%M:%S",
-    "%Y-%m-%d %H:%M",
-    "%Y/%m/%d %H:%M",
-    "%Y/%m/%d/%H:%M",  # 画面レイアウトの表記 (YYYY/MM/DD/00:00)
-    "%Y-%m-%d",
-    "%Y/%m/%d",
-)
+
 MAX_FEE = 2147483647  # INT の上限
 MAX_PARKING_INFO = 100
 MAX_CONTACT_INFO = 255
@@ -89,11 +84,7 @@ def _url(endpoint, fallback, **values):
 
 
 def _detail_url(event_post_id):
-    return _url(
-        DETAIL_ENDPOINT,
-        f"/event/{event_post_id}",
-        post_id=event_post_id,
-    )
+    return _url(DETAIL_ENDPOINT, f"/events/{event_post_id}", event_id=event_post_id)
 
 
 def _first(row):
@@ -108,16 +99,6 @@ def _safe_rollback(conn):
         logger.exception("ロールバックに失敗しました")
 
 
-def _parse_datetime(text):
-    text = (text or "").strip()
-    for fmt in DATETIME_FORMATS:
-        try:
-            return datetime.strptime(text, fmt)
-        except ValueError:
-            continue
-    return None
-
-
 def _form_error_messages(form):
     """バリデーションフォームのエラーを文字列のリストにする。"""
     messages = []
@@ -129,22 +110,13 @@ def _form_error_messages(form):
     return messages
 
 
-def _build_data():
-    """request.form から登録用データを作る。
-
-    PostForm (validation.py) に定義が無い項目 (参加費・駐車場・連絡先) と、
-    DBに渡すための日時の整形をここで行う。
-    戻り値は (data, errors)。
-    """
-    form = request.form
+def _build_data(form):
+    """PostForm の検証済み値と、PostForm に無い項目から登録用データを作る。"""
+    src = request.form
     errors = []
 
-    event_datetime = _parse_datetime(form.get("event_datetime"))
-    if event_datetime is None:
-        errors.append("開催日時の形式が正しくありません。")
-
-    fee_text = (form.get("event_fee") or "").strip()
-    fee = 0  # 未入力は初期値の 0 (無料)
+    fee_text = (src.get("fee") or "").strip()
+    fee = 0  # 未入力は 0 (無料)
     if fee_text:
         try:
             fee = int(fee_text)
@@ -154,23 +126,26 @@ def _build_data():
             if fee < 0 or fee > MAX_FEE:
                 errors.append("料金は0以上の整数で入力してください。")
 
-    parking_info = form.get("event_parkinginfo") or ""
+    location = form.location.data or ""
+    address = src.get("address") or ""
+    parking_info = src.get("parking_info") or ""
+    contact_info = src.get("contact_info") or ""
+    if len(location) > MAX_LOCATION:
+        errors.append(f"開催場所は{MAX_LOCATION}文字以内で入力してください。")
+    if len(address) > MAX_ADDRESS:
+        errors.append(f"住所は{MAX_ADDRESS}文字以内で入力してください。")
     if len(parking_info) > MAX_PARKING_INFO:
         errors.append(f"駐車場は{MAX_PARKING_INFO}文字以内で入力してください。")
-
-    contact_info = form.get("event_contactinfo") or ""
     if len(contact_info) > MAX_CONTACT_INFO:
         errors.append(f"連絡先は{MAX_CONTACT_INFO}文字以内で入力してください。")
 
     data = {
-        "title": form.get("event_title", ""),
-        "description": form.get("event_description", ""),
-        "datetime": (
-            event_datetime.strftime("%Y-%m-%d %H:%M:%S") if event_datetime else None
-        ),
+        "title": form.title.data,
+        "description": form.desc.data,
+        "datetime": form.dt.data,   # YYYY-MM-DD (DBの列は DATE)
         "fee": fee,
-        "location": form.get("event_location", ""),
-        "address": form.get("event_address", ""),
+        "location": location,
+        "address": address,
         "parking_info": parking_info,
         "contact_info": contact_info,
     }
@@ -190,10 +165,10 @@ def _issue_image_name(original_filename):
 
 
 def _upload_dir():
-    configured = current_app.config.get("EVENT_IMAGE_DIR")
-    if configured:
-        return configured
-    return os.path.join(current_app.static_folder or "static", "uploads", "event")
+    # DBには「ファイル名だけ」入れ、static/uploads/ 直下に保存する
+    return current_app.config.get("UPLOAD_FOLDER") or os.path.join(
+        current_app.static_folder or "static", "uploads"
+    )
 
 
 def _save_image(image_file, image_name):
@@ -275,30 +250,28 @@ def save_event_post(userid, data, image_file=None):
 
 # --- ルート -----------------------------------------------------------
 @event_post_bp.route("/post", methods=["GET", "POST"])
+@event_post_bp.route("/post", methods=["GET", "POST"])
 def post_event():
-    userid = session.get("user")
-    if userid is None:
+    user = session.get("user")
+    if not user:
         return redirect(_url(LOGIN_ENDPOINT, "/login"))
+    userid = user["id"]
 
     form = PostForm()
     if request.method == "GET":
         return render_template(TEMPLATE_POST, form=form)
 
-    # バリデーションチェック (er)
-    er = form.validate_on_submit()
-    if not er:
+    if not form.validate_on_submit():
         ev_er_message = "\n".join(_form_error_messages(form))
         return render_template(TEMPLATE_POST, form=form, ev_er_message=ev_er_message)
 
-    data, errors = _build_data()
+    data, errors = _build_data(form)
     if errors:
         return render_template(
             TEMPLATE_POST, form=form, ev_er_message="\n".join(errors)
         )
 
-    code, event_post_id = save_event_post(
-        userid, data, request.files.get("event_image")
-    )
+    code, event_post_id = save_event_post(userid, data, request.files.get("image"))
     if code != CODE_SUCCESS:
         return (
             render_template(
