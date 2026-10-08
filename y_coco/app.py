@@ -9,6 +9,7 @@ y-coco(地域情報発信アプリ)のFlaskアプリ本体。
     python -m y_coco.app
 """
 from flask import Blueprint, Flask, render_template
+from flask_wtf.csrf import CSRFProtect
 
 from y_coco import config
 from y_coco import detail, kh_detail, kh_list, kh_search, login, logout, search
@@ -29,6 +30,8 @@ BLUEPRINT_MODULES = (
     kh_detail,
     kh_search,
 )
+
+csrf_protect = CSRFProtect()
 
 
 def find_blueprints(module):
@@ -65,10 +68,11 @@ def create_app(test_config=None):
     app = Flask(__name__)
 
     # config.py の大文字の変数(SECRET_KEY など)を読み込む
-    app.config.from_object(config)
+    app.config.from_object(config.Config)
     if test_config is not None:
         app.config.update(test_config)
 
+    csrf_protect.init_app(app)
     register_blueprints(app)
 
     @app.route("/")
