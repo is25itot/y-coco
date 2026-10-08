@@ -47,12 +47,6 @@ from flask import (
 from werkzeug.routing import BuildError
 
 from y_coco.user.account import delete, edit, myposts, notification_check, register
-from y_coco.user.event import comment as event_comment
-from y_coco.user.event import post as event_post
-
-
-from y_coco.user.knowhow import kh_post
-from y_coco.user.knowhow import kh_comment
 
 user_bp = Blueprint("user", __name__, template_folder="templates")
 
@@ -254,69 +248,3 @@ def notifications_read():
 
     code = notification_check.mark_as_read(ids)
     return jsonify({"code": code}), (200 if code == 0 else 500)
-
-
-# ---------------------------------------------------------------------------
-# イベント: 投稿(FL22) / コメント(FL26)
-# ---------------------------------------------------------------------------
-@user_bp.route("/event/post", methods=["GET", "POST"])
-@login_required
-def event_post_view():
-    if request.method == "GET":
-        return render_template("event/post.html")
-
-    code, event_post_id = event_post.post_event(
-        request.form,
-        request.files.get("event_image"),
-        _current_user_id(),
-    )
-    if code == 0:
-        return _redirect_to(
-            EVENT_DETAIL_ENDPOINT, fallback="/event", event_id=event_post_id
-        )
-
-    flash(MSG_EVENT_POST_FAILED)
-    return render_template("event/post.html"), 400
-
-
-@user_bp.route("/event/<int:event_id>/comment", methods=["POST"])
-@login_required
-def event_comment_view(event_id):
-    code = event_comment.add_comment(
-        event_id, _current_user_id(), request.form.get("comment", "")
-    )
-    if code != 0:
-        flash(MSG_COMMENT_FAILED)
-    return _redirect_to(EVENT_DETAIL_ENDPOINT, fallback="/event", event_id=event_id)
-
-
-# ---------------------------------------------------------------------------
-# ノウハウ: 投稿(FL31) / コメント(FL35)
-# ---------------------------------------------------------------------------
-@user_bp.route("/knowhow/post", methods=["GET", "POST"])
-@login_required
-def knowhow_post_view():
-    if request.method == "GET":
-        return render_template("knowhow/kh_post.html")
-
-    code, knowhow_post_id = kh_post.post_knowhow(request.form, _current_user_id())
-    if code == 0:
-        return _redirect_to(
-            KNOWHOW_DETAIL_ENDPOINT, fallback="/knowhow", knowhow_id=knowhow_post_id
-        )
-
-    flash(MSG_KNOWHOW_POST_FAILED)
-    return render_template("knowhow/kh_post.html"), 400
-
-
-@user_bp.route("/knowhow/<int:knowhow_id>/comment", methods=["POST"])
-@login_required
-def knowhow_comment_view(knowhow_id):
-    code = kh_comment.add_comment(
-        knowhow_id, _current_user_id(), request.form.get("comment", "")
-    )
-    if code != 0:
-        flash(MSG_COMMENT_FAILED)
-    return _redirect_to(
-        KNOWHOW_DETAIL_ENDPOINT, fallback="/knowhow", knowhow_id=knowhow_id
-    )
