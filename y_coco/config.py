@@ -22,8 +22,9 @@ class Config:
     MAX_IMAGE_BYTES = 1 * 1024 * 1024
 
     # --- データベース (XAMPP の MySQL / MariaDB) ---
+    # 今はXAMPPなので、本番ではDBサーバーのアドレスやIDなどを指定する
     DB_HOST = os.environ.get("DB_HOST", "localhost")
     DB_PORT = int(os.environ.get("DB_PORT", "3306"))
     DB_USER = os.environ.get("DB_USER", "root")
     DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
-    DB_NAME = os.environ.get("DB_NAME", "ycoco")
+    DB_NAME = os.environ.get("DB_NAME", "pbl-g3")
