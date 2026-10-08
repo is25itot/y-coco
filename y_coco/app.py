@@ -16,19 +16,15 @@ from y_coco import detail, kh_detail, kh_list, kh_search, login, logout, search
 from y_coco import list as list_views
 from y_coco.admin import admin_views
 from y_coco.user import user_views
+from y_coco.user.event import comment as event_comment
+from y_coco.user.event import post as event_post
+from y_coco.user.knowhow import kh_comment, kh_post
 
 # Blueprint を持つモジュール(登録順)
 BLUEPRINT_MODULES = (
-    user_views,
-    admin_views,
-    login,
-    logout,
-    list_views,
-    detail,
-    search,
-    kh_list,
-    kh_detail,
-    kh_search,
+    user_views, admin_views, login, logout, list_views, detail, search,
+    kh_list, kh_detail, kh_search,
+    event_post, event_comment, kh_post, kh_comment,   # ← 追加
 )
 
 csrf_protect = CSRFProtect()
