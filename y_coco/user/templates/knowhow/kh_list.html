@@ -3,7 +3,7 @@
 {% set active_tab = 'knowhow' %}
 {% set header_mode = 'search' %}
 {% set search_url = url_for('kh_search.search') %}
-{% set post_url = url_for('user.knowhow_post_view') %}
+{% set post_url = url_for('knowhow_post.post_knowhow') %}
 
 {% block content %}
   {% from "_macros.html" import post_card %}
