@@ -76,9 +76,16 @@ def create_app(test_config=None):
         """スタート画面: ログイン・新規登録を選択する"""
         return render_template("index.html")
 
+    # @app.errorhandler(404)
+    # def not_found(error):
+    #     return "ページが見つかりません", 404
+
+    # 404エラー確認用
     @app.errorhandler(404)
     def not_found(error):
-        return "ページが見つかりません", 404
+        from flask import request
+        app.logger.warning("404: %s", request.path)
+        return f"ページが見つかりません: {request.path}", 404
 
     @app.errorhandler(413)
     def too_large(error):
