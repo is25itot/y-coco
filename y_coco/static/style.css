@@ -1,0 +1,165 @@
+/* y-coco 共通スタイル (スマホ幅 414px 前後の画面構成に合わせたモバイルファースト) */
+:root {
+  --navy: #1f2f7a;
+  --green: #8be34a;
+  --card: #f5f5f5;
+  --cyan: #7be8ff;
+  --danger: #c62828;
+  --text: #1a1a1a;
+  --muted: #777;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  background: var(--green);
+  color: var(--text);
+  line-height: 1.6;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ---- ヘッダー ---- */
+.app-header {
+  position: sticky; top: 0; z-index: 10;
+  height: 64px; padding: 0 14px;
+  display: grid; grid-template-columns: 56px 1fr 56px; align-items: center;
+  background: var(--navy); color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
+  max-width: 480px; margin: 0 auto;
+}
+.app-header .h-left { justify-self: start; }
+.app-header .h-right { justify-self: end; }
+.app-header .h-center { text-align: center; font-size: 1.05rem; font-weight: bold; }
+.app-header h1 { margin: 0; font-size: 1.1rem; }
+.app-header svg { width: 32px; height: 32px; fill: #fff; display: block; }
+.icon-circle {
+  width: 40px; height: 40px; border-radius: 50%; background: #fff;
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.icon-circle svg { fill: var(--navy); width: 24px; height: 24px; }
+.badge {
+  position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px;
+  border-radius: 8px; background: var(--danger); color: #fff; font-size: 10px;
+  text-align: center; line-height: 16px;
+}
+.btn-post {
+  display: inline-block; width: 100%; max-width: 220px; padding: 6px 0;
+  background: var(--cyan); color: #fff; border-radius: 6px; letter-spacing: .5em;
+  text-indent: .5em; font-size: 1.05rem;
+}
+.header-link { color: #fff; font-size: .85rem; white-space: nowrap; }
+
+/* ---- 本体 ---- */
+.page-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; }
+main.container { padding: 14px 14px 110px; }
+main.container.no-footer { padding-bottom: 32px; }
+
+/* ---- カード ---- */
+.card {
+  display: block; background: var(--card); border-radius: 18px;
+  padding: 12px 14px; margin-bottom: 14px; overflow: hidden;
+}
+.card-link:hover { filter: brightness(.97); }
+.post-card { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; }
+.post-card .title { font-weight: bold; word-break: break-word; }
+.post-card .summary { font-size: .9rem; word-break: break-word; }
+.post-card .thumb {
+  width: 84px; height: 84px; object-fit: cover; border-radius: 8px; border: 1px solid #333;
+}
+.post-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: .9rem; }
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%; background: #d9d9d9;
+  object-fit: cover; flex: none;
+}
+.avatar.lg { width: 96px; height: 96px; }
+.muted { color: var(--muted); font-size: .8rem; }
+.empty-message { text-align: center; padding: 28px 0; font-weight: bold; }
+
+/* ---- 詳細 ---- */
+.detail-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.detail-title { font-size: 1.2rem; margin: 10px 0; word-break: break-word; }
+.detail-body { white-space: pre-wrap; word-break: break-word; margin: 10px 0; }
+.detail-image { max-width: 100%; border-radius: 8px; margin: 6px 0; }
+.info-list { list-style: none; padding: 0; margin: 10px 0 0; }
+.info-list li { margin-bottom: 10px; }
+.info-list .label::before { content: "・"; }
+.info-list .label { font-weight: bold; font-size: 1.05rem; }
+.info-list .value { margin-left: 1em; word-break: break-word; }
+.section-title { font-size: 1.3rem; margin: 18px 0 8px; font-weight: bold; }
+
+/* ---- コメント ---- */
+.comment-form textarea {
+  width: 100%; min-height: 84px; border: 0; border-radius: 6px; padding: 10px;
+  background: #e8fbff; font: inherit; resize: vertical;
+}
+.comment-card { background: var(--card); border-radius: 14px; padding: 10px 14px; margin-bottom: 10px; }
+.comment-card .who { display: flex; align-items: center; gap: 8px; font-size: .8rem; }
+.comment-card .text { margin: 4px 0 0; word-break: break-word; white-space: pre-wrap; }
+.comment-card .actions { text-align: right; }
+
+/* ---- ボタン ---- */
+.btn {
+  display: block; width: 100%; padding: 12px; border: 0; border-radius: 6px;
+  background: var(--navy); color: #fff; font: inherit; font-size: 1.05rem;
+  text-align: center; cursor: pointer;
+}
+.btn.inline { display: inline-block; width: auto; padding: 8px 22px; }
+.btn.right { margin-left: auto; }
+.btn.cyan { background: var(--cyan); color: #fff; }
+.btn.danger { background: var(--danger); }
+.btn.ghost { background: #fff; color: var(--navy); border: 2px solid var(--navy); }
+.btn.big { padding: 52px 0; font-size: 1.5rem; margin-bottom: 40px; border-radius: 0; }
+.btn-row { display: flex; gap: 12px; margin-top: 14px; }
+.btn-row .btn { flex: 1; }
+.delete-link {
+  display: inline-block; padding: 4px 18px; background: var(--navy); color: #fff;
+  border-radius: 6px; font-size: .9rem; border: 0; cursor: pointer; font-family: inherit;
+}
+.right-align { text-align: right; margin-bottom: 8px; }
+
+/* ---- フォーム ---- */
+.form-card { background: transparent; }
+label { display: block; font-weight: bold; margin: 14px 0 4px; }
+input[type=text], input[type=password], input[type=date], input[type=number],
+input[type=search], input[type=file], textarea.field {
+  width: 100%; padding: 10px; border: 1px solid #aaa; border-radius: 6px;
+  background: #fff; font: inherit;
+}
+textarea.field { min-height: 140px; resize: vertical; }
+.form-card .btn { margin-top: 22px; }
+.image-preview { max-width: 100%; max-height: 220px; display: none; margin-top: 8px; border-radius: 8px; }
+.hint { font-size: .75rem; color: #333; margin-top: 2px; }
+
+/* ---- メッセージ ---- */
+.flash { padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-weight: bold; }
+.flash.error { background: #ffe0e0; color: var(--danger); }
+.flash.success, .flash.message { background: #e3ffd2; color: #1b5e20; }
+.confirm-box { background: var(--card); border-radius: 18px; padding: 22px 14px; text-align: center; margin: 28px 0; }
+.confirm-box p { font-size: 1.2rem; font-weight: bold; margin: 0 0 14px; }
+
+/* ---- マイアカウント ---- */
+.account-top { text-align: center; }
+.account-top .name { font-size: 1.3rem; font-weight: bold; margin: 10px 0; }
+.menu-list { list-style: none; padding: 0; margin: 20px 0; }
+.menu-list a { display: block; background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 12px; text-align: center; font-weight: bold; }
+
+/* ---- 通知 ---- */
+.notice.unread { border-left: 6px solid var(--navy); }
+.notice .when { font-size: .75rem; color: var(--muted); }
+
+/* ---- 管理者 ---- */
+.admin-row { display: flex; align-items: center; gap: 10px; }
+.admin-row .name { font-weight: bold; }
+.search-form { margin-top: 10px; }
+.search-form .btn { margin-top: 14px; }
+
+/* ---- フッター ---- */
+.app-footer {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  max-width: 480px; margin: 0 auto; height: 78px;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--navy); color: #fff;
+}
+.app-footer a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: .62rem; font-weight: bold; opacity: .8; }
+.app-footer a.active { opacity: 1; }
+.app-footer svg { width: 38px; height: 38px; fill: #fff; }
