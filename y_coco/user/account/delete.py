@@ -11,7 +11,11 @@ import logging
 
 from flask import Blueprint, flash, redirect, request, session
 
-from y_coco.db import POST_TYPE_EVENT, POST_TYPE_KNOWHOW, run_in_transaction
+# from y_coco.db import POST_TYPE_EVENT, POST_TYPE_KNOWHOW, run_in_transaction
+from y_coco.db import run_in_transaction
+
+from y_coco.detail import POST_TYPE_EVENT
+from y_coco.kh_detail import POST_TYPE_KNOWHOW
 
 logger = logging.getLogger(__name__)
 

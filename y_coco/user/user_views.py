@@ -46,13 +46,13 @@ from flask import (
 )
 from werkzeug.routing import BuildError
 
-from .account import delete, edit, myposts, notification_check, register
-from .event import comment as event_comment
-from .event import post as event_post
+from y_coco.user.account import delete, edit, myposts, notification_check, register
+from y_coco.user.event import comment as event_comment
+from y_coco.user.event import post as event_post
 
 
-from .knowhow import kh_post
-from .knowhow import kh_comment
+from y_coco.user.knowhow import kh_post
+from y_coco.user.knowhow import kh_comment
 
 user_bp = Blueprint("user", __name__, template_folder="templates")
 
