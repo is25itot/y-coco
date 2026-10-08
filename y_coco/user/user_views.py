@@ -120,15 +120,31 @@ def register_view():
     if request.method == "GET":
         return render_template("account/register.html")
 
-    code = register.register_user(
-        request.form.get("user_id", ""),
-        request.form.get("password", ""),
-    )
-    if code == 0:
-        return _redirect_to(LOGIN_ENDPOINT, fallback="/login")
+    username = request.form.get("username", "")
+    password = request.form.get("password", "")
+    repassword = request.form.get("repassword", "")
 
-    flash(MSG_REGISTER_FAILED)
-    return render_template("account/register.html"), 400
+    from y_coco.validation import UserForm, PasswordForm
+    ok = True
+    for form in (UserForm(), PasswordForm()):
+        if not form.validate_on_submit():
+            for errors in form.errors.values():
+                for e in errors:
+                    flash(e, "error")
+            ok = False
+    if ok and password != repassword:
+        flash("パスワードが一致しません", "error")
+        ok = False
+    if not ok:
+        return render_template("account/register.html"), 400
+
+    code, error_msg = register.register_user(username, password)
+    if code != 0:
+        flash(error_msg or MSG_REGISTER_FAILED, "error")
+        return render_template("account/register.html"), 400
+
+    flash("アカウントを登録しました", "success")
+    return _redirect_to(LOGIN_ENDPOINT, fallback="/login")
 
 
 # ---------------------------------------------------------------------------
