@@ -9,7 +9,7 @@ from functools import lru_cache
 from flask import (Blueprint, flash, redirect, render_template, request,
                    session, url_for)
 
-import db
+from y_coco import db
 
 kh_search_bp = Blueprint("kh_search", __name__, template_folder="user/templates")
 

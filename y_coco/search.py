@@ -7,7 +7,7 @@ from functools import lru_cache
 
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
-import db
+from y_coco import db
 
 search_bp = Blueprint("event_search", __name__, template_folder="user/templates")
 
