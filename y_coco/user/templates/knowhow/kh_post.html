@@ -1,17 +1,21 @@
 {% extends "base.html" %}
+{% from "_macros.html" import csrf %}
 {% set header_mode = 'back' %}
+{% set back_url = url_for('kh_list.index') %}
+{% block title %}ノウハウ投稿 | y-coco{% endblock %}
+{% block content %}
+{% if kh_er_message %}
+<div class="flash error" style="white-space:pre-line">{{ kh_er_message }}</div>
+{% endif %}
+<form method="post" class="form-card">
+  {{ csrf() }}
+  <label for="title">タイトル</label>
+  <input id="title" name="title" type="text" maxlength="50" required
+         value="{{ form.title.data or '' }}">
 
-<div class="container">
-    <h2>ノウハウ新規投稿</h2>
-    <form action="{{ url_for('user.kh_post') }}" method="POST">
-        <div class="form-group">
-            <label for="title">タイトル</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <div class="form-group">
-            <label for="content">本文</label>
-            <textarea id="content" name="content" rows="10" required></textarea>
-        </div>
-        <button type="submit" class="btn">投稿する</button>
-    </form>
-</div>
+  <label for="kh_post">内容</label>
+  <textarea id="kh_post" name="kh_post" class="field" maxlength="500" required>{{ form.kh_post.data or '' }}</textarea>
+
+  <button type="submit" class="btn">投稿</button>
+</form>
+{% endblock %}

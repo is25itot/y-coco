@@ -1,25 +1,48 @@
 {% extends "base.html" %}
+{% from "_macros.html" import csrf %}
 {% set header_mode = 'back' %}
+{% set back_url = url_for('event_list.index') %}
+{% block title %}イベント投稿 | y-coco{% endblock %}
+{% block content %}
+{% if ev_er_message %}
+<div class="flash error" style="white-space:pre-line">{{ ev_er_message }}</div>
+{% endif %}
+<form method="post" enctype="multipart/form-data" class="form-card">
+  {{ csrf() }}
+  <label for="title">タイトル</label>
+  <input id="title" name="title" type="text" maxlength="50" required
+         value="{{ form.title.data or '' }}">
 
-<div class="container">
-    <h2>イベント新規投稿</h2>
-    <form action="{{ url_for('user.event_post') }}" method="POST">
-        <div class="form-group">
-            <label for="title">イベント名</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <div class="form-group">
-            <label for="event_date">開催日時</label>
-            <input type="datetime-local" id="event_date" name="event_date" required>
-        </div>
-        <div class="form-group">
-            <label for="location">開催場所</label>
-            <input type="text" id="location" name="location">
-        </div>
-        <div class="form-group">
-            <label for="description">詳細情報</label>
-            <textarea id="description" name="description" rows="5" required></textarea>
-        </div>
-        <button type="submit" class="btn">投稿する</button>
-    </form>
-</div>
+  <label for="dt">開催日</label>
+  <input id="dt" name="dt" type="date" required value="{{ form.dt.data or '' }}">
+
+  <label for="location">開催場所</label>
+  <input id="location" name="location" type="text" maxlength="100" required
+         value="{{ form.location.data or '' }}">
+
+  <label for="address">住所</label>
+  <input id="address" name="address" type="text" maxlength="100"
+         value="{{ request.form.get('address', '') }}">
+
+  <label for="desc">詳細</label>
+  <textarea id="desc" name="desc" class="field" maxlength="5000" required>{{ form.desc.data or '' }}</textarea>
+
+  <label for="fee">参加費(円・空欄は無料)</label>
+  <input id="fee" name="fee" type="number" min="0" value="{{ request.form.get('fee', '') }}">
+
+  <label for="parking_info">駐車場</label>
+  <input id="parking_info" name="parking_info" type="text" maxlength="100"
+         value="{{ request.form.get('parking_info', '') }}">
+
+  <label for="contact_info">お問い合わせ</label>
+  <input id="contact_info" name="contact_info" type="text" maxlength="255"
+         value="{{ request.form.get('contact_info', '') }}">
+
+  <label for="image">画像(1MBまで)</label>
+  <input id="image" name="image" type="file" data-preview="preview"
+         accept="image/png,image/jpeg,image/gif,image/webp">
+  <img id="preview" class="image-preview" alt="">
+
+  <button type="submit" class="btn">投稿</button>
+</form>
+{% endblock %}
