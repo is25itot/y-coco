@@ -1,0 +1,10 @@
+{# ノウハウ詳細本体。変数: knowhow #}
+{% from "_macros.html" import avatar, fmt %}
+<article class="card">
+  <div class="detail-head">
+    <span class="post-meta" style="margin:0">{{ avatar(knowhow.usericon) }}<span>{{ knowhow.username }}</span></span>
+    <span class="muted">{{ fmt(knowhow.created_at) }}</span>
+  </div>
+  <h2 class="detail-title">{{ knowhow.title }}</h2>
+  <div class="detail-body">{{ knowhow.detail }}</div>
+</article>

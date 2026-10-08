@@ -1,0 +1,53 @@
+{# 共通マクロ。 {% from "_macros.html" import avatar, fmt ... %} で読み込む #}
+
+{% macro csrf() -%}
+{%- if csrf_token is defined -%}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{%- endif -%}
+{%- endmacro %}
+
+{# ユーザーアイコン。imagepath が無ければ既定アイコン #}
+{% macro avatar(path, cls='') -%}
+<img class="avatar {{ cls }}" alt="" src="{{ url_for('static', filename=('uploads/' ~ path) if path else 'images/default_icon.svg') }}">
+{%- endmacro %}
+
+{# 日付・日時の整形 (None / 文字列 / date / datetime に対応) #}
+{% macro fmt(value, pattern='%Y/%m/%d %H:%M') -%}
+{%- if value is none or value == '' -%}
+{%- elif value is string -%}{{ value }}
+{%- else -%}{{ value.strftime(pattern) }}
+{%- endif -%}
+{%- endmacro %}
+
+{# 一覧のカード。item: id/title/summary/username/usericon/(imagepath) #}
+{% macro post_card(item, href, with_image=False) -%}
+<a class="card post-card card-link" href="{{ href }}">
+  <div>
+    <div class="title">{{ item.title }}</div>
+    <div class="summary">{{ item.summary }}</div>
+    <div class="post-meta">{{ avatar(item.usericon) }}<span>{{ item.username }}</span></div>
+  </div>
+  {% if with_image and item.imagepath %}
+  <img class="thumb" alt="" src="{{ url_for('static', filename='uploads/' ~ item.imagepath) }}">
+  {% endif %}
+</a>
+{%- endmacro %}
+
+{# コメント1件。delete_href を渡すと削除リンクを出す #}
+{% macro comment_card(c, delete_href=None) -%}
+<div class="comment-card">
+  <div class="who">{{ avatar(c.usericon) }}<span>{{ c.username }}</span>
+    <span class="muted" style="margin-left:auto">{{ fmt(c.created_at) }}</span></div>
+  <p class="text">{{ c.comment }}</p>
+  {% if delete_href %}<div class="actions"><a class="delete-link" href="{{ delete_href }}">削除</a></div>{% endif %}
+</div>
+{%- endmacro %}
+
+{# はい / いいえ の確認ボタン。action は POST 先、back_href は「いいえ」の戻り先 #}
+{% macro confirm_buttons(action, back_href) -%}
+<form method="post" action="{{ action }}">
+  {{ csrf() }}
+  <div class="btn-row">
+    <a class="btn ghost" href="{{ back_href }}">No</a>
+    <button type="submit" class="btn danger">Yes</button>
+  </div>
+</form>
+{%- endmacro %}

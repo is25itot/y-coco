@@ -1,0 +1,29 @@
+{# イベント詳細本体。変数: event #}
+{% from "_macros.html" import avatar, fmt %}
+<article class="card">
+  <div class="detail-head">
+    <span class="post-meta" style="margin:0">{{ avatar(event.usericon) }}<span>{{ event.username }}</span></span>
+    <span class="muted">{{ fmt(event.created_at) }}</span>
+  </div>
+  <h2 class="detail-title">{{ event.title }}</h2>
+  <div class="detail-body">{{ event.description }}</div>
+  {% if event.imagepath %}
+  <img class="detail-image" alt="" src="{{ url_for('static', filename='uploads/' ~ event.imagepath) }}">
+  {% endif %}
+  {% if event.location %}
+  <p><strong>{{ event.location }}</strong></p>
+  {% endif %}
+  {% if event.address %}
+  <p>
+    {{ event.address }}<br>
+    <a href="https://www.google.com/maps/search/?api=1&query={{ event.address|urlencode }}" target="_blank" rel="noopener"><u>地図で見る</u></a>
+  </p>
+  {% endif %}
+  <ul class="info-list">
+    <li><span class="label">開催日時</span><div class="value">{{ fmt(event.datetime, '%Y/%m/%d') }}</div></li>
+    <li><span class="label">駐車場</span><div class="value">{{ event.parking_info or 'なし' }}</div></li>
+    <li><span class="label">参加費</span>
+      <div class="value">{% if event.fee %}{{ '{:,}'.format(event.fee) }}円{% else %}無料{% endif %}</div></li>
+    <li><span class="label">お問い合わせ</span><div class="value">{{ event.contact_info or '-' }}</div></li>
+  </ul>
+</article>
