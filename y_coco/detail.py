@@ -5,7 +5,7 @@
 """
 from flask import Blueprint, redirect, render_template, session, url_for
 
-import db
+from y_coco import db
 
 detail_bp = Blueprint("event_detail", __name__, template_folder="user/templates")
 

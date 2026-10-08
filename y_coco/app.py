@@ -10,11 +10,10 @@ y-coco(地域情報発信アプリ)のFlaskアプリ本体。
 """
 from flask import Flask, render_template
 
-from . import config
-from .user.user_views import user_bp
+from y_coco import config
+from y_coco.user.user_views import user_bp
 
-# admin_views.py は未作成のため、作成でき次第コメントを外して有効化する
-from .admin.admin_views import admin_bp
+from y_coco.admin.admin_views import admin_bp
 
 
 def create_app(test_config=None):
@@ -33,7 +32,7 @@ def create_app(test_config=None):
 
     # Blueprint の登録
     app.register_blueprint(user_bp)
-    app.register_blueprint(admin_bp)  # admin_views.py 作成後に有効化
+    app.register_blueprint(admin_bp)
 
     @app.route("/")
     def index():
