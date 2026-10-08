@@ -1,5 +1,5 @@
 {# コメント欄。変数: kind('event'|'knowhow'), post(投稿), comment_list, comment_message, userid, admin_view(任意) #}
-{% from "_macros.html" import comment_card, csrf %}
+{% from "_macros.html" import csrf %}
 <h2 class="section-title">コメント</h2>
 {% if not admin_view %}
 <form class="comment-form" method="post"
