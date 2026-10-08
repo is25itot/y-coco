@@ -61,11 +61,11 @@ user_bp = Blueprint("user", __name__, template_folder="templates")
 # ---------------------------------------------------------------------------
 # 他の担当(app.py / list.py / detail.py / login.py など)側のエンドポイント名。
 # 実際の名前に合わせて変更する。未登録でもエラーにならず fallback のURLへ遷移する。
-LOGIN_ENDPOINT = "login"
-EVENT_LIST_ENDPOINT = "event_list"
-EVENT_DETAIL_ENDPOINT = "event_detail"
-KNOWHOW_LIST_ENDPOINT = "kh_list"
-KNOWHOW_DETAIL_ENDPOINT = "kh_detail"
+LOGIN_ENDPOINT = "login.login"
+EVENT_LIST_ENDPOINT = "event_list.index"
+EVENT_DETAIL_ENDPOINT = "event_detail.show"
+KNOWHOW_LIST_ENDPOINT = "kh_list.index"
+KNOWHOW_DETAIL_ENDPOINT = "kh_detail.show"
 
 DELETE_KINDS = ("event", "knowhow", "comment")
 
