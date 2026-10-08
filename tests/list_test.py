@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 
 import fakes
-import list as event_list
+import y_coco.list as event_list
 
 STUBS = [("/login", "login.login")]
 

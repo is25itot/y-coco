@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 
 import fakes
-import kh_detail
+import y_coco.kh_detail as kh_detail
 
 STUBS = [("/login", "login.login")]
 KH = {"id": 3, "user_id": 10, "title": "コツ", "detail": "d", "username": "u"}

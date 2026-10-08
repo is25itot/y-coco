@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 
 import fakes  # noqa: F401  (sys.path / db スタブの準備。先に import する)
-import detail
+import y_coco.detail as detail
 
 STUBS = [("/login", "login.login")]
 EVENT = {"id": 5, "user_id": 10, "title": "祭り", "description": "d", "username": "u"}

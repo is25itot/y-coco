@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 
 import fakes
-import kh_search
+import y_coco.kh_search as kh_search
 
 STUBS = [("/login", "login.login")]
 

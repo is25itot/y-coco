@@ -4,7 +4,7 @@ from unittest import mock
 from werkzeug.security import generate_password_hash
 
 import fakes
-import login
+import y_coco.login as login
 
 STUBS = [("/events", "event_list.index")]
 

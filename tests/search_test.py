@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 
 import fakes
-import search
+import y_coco.search as search
 
 STUBS = [("/login", "login.login")]
 

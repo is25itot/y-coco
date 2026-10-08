@@ -1,7 +1,7 @@
 import unittest
 
 import fakes
-import logout
+import y_coco.logout as logout
 
 STUBS = [("/login", "login.login")]
 
