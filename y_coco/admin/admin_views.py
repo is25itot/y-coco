@@ -15,9 +15,9 @@ import os
 from flask import (Blueprint, abort, current_app, flash, redirect,
                    render_template, request, session, url_for)
 
-import db
-from detail import POST_TYPE_EVENT, load_event_detail
-from kh_detail import POST_TYPE_KNOWHOW, load_kh_detail
+from y_coco import db
+from y_coco.detail import POST_TYPE_EVENT, load_event_detail
+from y_coco.kh_detail import POST_TYPE_KNOWHOW, load_kh_detail
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin", template_folder="templates")
 
