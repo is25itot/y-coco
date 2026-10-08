@@ -7,7 +7,7 @@ get_connection() は DictCursor 付きの pymysql 接続を返す。
 import pymysql
 from pymysql.cursors import DictCursor
 
-from config import Config
+from y_coco.config import Config
 
 
 def get_connection():
