@@ -250,7 +250,6 @@ def save_event_post(userid, data, image_file=None):
 
 # --- ルート -----------------------------------------------------------
 @event_post_bp.route("/post", methods=["GET", "POST"])
-@event_post_bp.route("/post", methods=["GET", "POST"])
 def post_event():
     user = session.get("user")
     if not user:
