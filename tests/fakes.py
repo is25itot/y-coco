@@ -1,90 +1,142 @@
-"""テスト共通ヘルパー: DB接続の偽物(Fake)とモジュール読み込み関数。
+"""テスト共通のフェイク (DB / Flask アプリ)。"""
+import os
+import sys
+import types
+from unittest import mock
 
-DB(XAMPP)を起動しなくてもテストできるよう、cursor / commit / rollback の
-呼び出しを記録するだけの接続オブジェクトを用意している。
-"""
-import importlib.util
-from pathlib import Path
+from flask import Flask
 
-ROOT = Path(__file__).resolve().parents[1]  # y-coco/
+# y-coco/ 直下のモジュールを import できるようにする
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-
-def load_module(relative_path, name):
-    """ファイルパスからモジュールを読み込む。
-
-    admin-delete.py のようにハイフンを含むファイル名は通常の import が
-    使えないため、importlib でパス指定して読み込む。
-    """
-    path = ROOT / relative_path
-    spec = importlib.util.spec_from_file_location(name, path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+try:  # 実物の db.py が使えない環境 (pymysql 未導入など) ではスタブで代用
+    import y_coco.db  # noqa: F401
+except Exception:  # pragma: no cover
+    _stub = types.ModuleType("db")
+    _stub.get_connection = lambda: None
+    sys.modules["db"] = _stub
+    import y_coco.db as db  # noqa: F401
 
 
 class FakeCursor:
-    def __init__(self, conn):
-        self._conn = conn
-        self._rows = []
-        self.rowcount = 0
+    def __init__(self, owner):
+        self.owner = owner
 
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc, tb):
+    def __exit__(self, *exc):
         return False
 
     def execute(self, sql, params=None):
-        normalized = " ".join(sql.split())
-        self._conn.executed.append((normalized, params))
-        result = self._conn.responder(normalized, params) or {}
-        self._rows = result.get("rows", [])
-        self.rowcount = result.get("rowcount", 1)
-        return self.rowcount
+        self.owner.executed.append((sql, params))
 
     def fetchone(self):
-        return self._rows[0] if self._rows else None
+        return self.owner.ones.pop(0) if self.owner.ones else None
 
     def fetchall(self):
-        return list(self._rows)
-
-    def close(self):
-        pass
+        return self.owner.alls.pop(0) if self.owner.alls else []
 
 
-class FakeConnection:
-    """responder(sql, params) -> {"rows": [...], "rowcount": n} を返す関数。
-    例外を投げさせたい場合は responder の中で raise する。
+class FakeDB:
+    """fetchone / fetchall の結果を順番に返す DB。get_connection に差し替えて使う。"""
+
+    def __init__(self, ones=(), alls=()):
+        self.ones = list(ones)
+        self.alls = list(alls)
+        self.executed = []
+        self.connections = []
+
+    def get_connection(self):
+        conn = mock.MagicMock()
+        conn.cursor.side_effect = lambda: FakeCursor(self)
+        self.connections.append(conn)
+        return conn
+
+
+def make_client(module, blueprint, stub_endpoints=()):
+    """blueprint を登録した Flask アプリを作り、(client, rendered) を返す。
+
+    module.render_template はフェイクに差し替え、呼び出された
+    (テンプレート名, コンテキスト) を rendered に溜める。
     """
+    app = Flask(__name__)
+    app.secret_key = "test"
+    app.config["TESTING"] = True
+    app.register_blueprint(blueprint)
+    for rule, endpoint in stub_endpoints:
+        app.add_url_rule(rule, endpoint=endpoint, view_func=lambda: "stub")
 
-    def __init__(self, responder=None):
-        self.responder = responder or (lambda sql, params: {})
-        self.executed = []   # [(正規化したSQL, params), ...]
-        self.events = []     # "commit" / "rollback" の発生順
-        self.closed = False
+    rendered = []
 
-    def cursor(self):
-        return FakeCursor(self)
+    def fake_render(name, **ctx):
+        rendered.append((name, ctx))
+        return "rendered"
 
-    def commit(self):
-        self.events.append("commit")
+    patcher = mock.patch.object(module, "render_template", fake_render, create=True)
+    patcher.start()
+    return app.test_client(), rendered, patcher
 
-    def rollback(self):
-        self.events.append("rollback")
 
-    def close(self):
-        self.closed = True
+def login_as(client, user_id=1, admin=False):
+    with client.session_transaction() as sess:
+        sess["user"] = {"id": user_id, "imagepath": "a.png", "admin_flg": admin}
 
-    @property
-    def committed(self):
-        return "commit" in self.events
 
-    @property
-    def rolled_back(self):
-        return "rollback" in self.events
+def flashes(client):
+    with client.session_transaction() as sess:
+        return [m for _, m in sess.get("_flashes", [])]
 
-    def sqls(self):
-        return [sql for sql, _ in self.executed]
 
-    def executed_starting_with(self, prefix):
-        return [(s, p) for s, p in self.executed if s.startswith(prefix)]
+# ---------------------------------------------------------------------------
+# 画面テスト用: 全 Blueprint を登録した Flask アプリ
+# ---------------------------------------------------------------------------
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# user_views.py (一般ユーザー向け機能) が公開する想定のエンドポイント。
+# テンプレートの url_for はこれらを前提にしている (README 参照)。
+USER_VIEW_ENDPOINTS = [
+    ("account.register", "/register"),
+    ("account.myaccount", "/account"),
+    ("account.profile_edit", "/account/profile"),
+    ("account.password_change", "/account/password"),
+    ("account.myposts", "/account/posts"),
+    ("account.notifications", "/notifications"),
+    ("event.post", "/events/post"),
+    ("event.comment", "/events/<int:event_id>/comment"),
+    ("event.delete_confirm", "/events/<int:event_id>/delete/confirm"),
+    ("event.delete", "/events/<int:event_id>/delete"),
+    ("event.comment_delete_confirm", "/event-comments/<int:comment_id>/delete/confirm"),
+    ("event.comment_delete", "/event-comments/<int:comment_id>/delete"),
+    ("knowhow.post", "/knowhow/post"),
+    ("knowhow.comment", "/knowhow/<int:knowhow_id>/comment"),
+    ("knowhow.delete_confirm", "/knowhow/<int:knowhow_id>/delete/confirm"),
+    ("knowhow.delete", "/knowhow/<int:knowhow_id>/delete"),
+    ("knowhow.comment_delete_confirm", "/knowhow-comments/<int:comment_id>/delete/confirm"),
+    ("knowhow.comment_delete", "/knowhow-comments/<int:comment_id>/delete"),
+]
+
+
+def make_full_app():
+    """実テンプレートを使い、このリポジトリの Blueprint + user_views 相当のスタブを登録したアプリ。"""
+    import importlib
+
+    app = Flask("ycoco_test", root_path=ROOT, template_folder="templates",
+                static_folder=os.path.join(ROOT, "static"))
+    app.secret_key = "test"
+    app.config["TESTING"] = True
+    app.config["UPLOAD_FOLDER"] = os.path.join(ROOT, "static", "uploads")
+
+    for mod_name, bp_name in [
+        ("login", "login_bp"), ("logout", "logout_bp"), ("list", "list_bp"),
+        ("detail", "detail_bp"), ("search", "search_bp"), ("kh_list", "kh_list_bp"),
+        ("kh_detail", "kh_detail_bp"), ("kh_search", "kh_search_bp"),
+        ("admin.admin_views", "admin_bp"),
+    ]:
+        app.register_blueprint(getattr(importlib.import_module(mod_name), bp_name))
+
+    for endpoint, rule in USER_VIEW_ENDPOINTS:
+        app.add_url_rule(rule, endpoint=endpoint, view_func=lambda **kw: "stub",
+                         methods=["GET", "POST"])
+    app.add_url_rule("/", endpoint="index", view_func=lambda: "stub")
+    return app
