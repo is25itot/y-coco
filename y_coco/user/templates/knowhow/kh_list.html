@@ -1,20 +1,17 @@
 {% extends "base.html" %}
+{% set show_footer = true %}
+{% set active_tab = 'knowhow' %}
+{% set header_mode = 'search' %}
+{% set search_url = url_for('kh_search.search') %}
+{% set post_url = url_for('user.knowhow_post_view') %}
 
-<div class="container">
-    <h2>ノウハウ一覧</h2>
-    <div class="actions">
-        <a href="{{ url_for('user.kh_search') }}" class="btn">ノウハウ検索</a>
-        <a href="{{ url_for('user.kh_post') }}" class="btn primary">新規ノウハウ投稿</a>
-    </div>
-
-    <div class="kh-grid">
-        {% for kh in knowhows %}
-            <div class="card">
-                <h3><a href="{{ url_for('user.kh_detail', id=kh.id) }}">{{ kh.title }}</a></h3>
-                <p>投稿者: {{ kh.author_name }}</p>
-            </div>
-        {% else %}
-            <p>ノウハウ投稿はまだありません。</p>
-        {% endfor %}
-    </div>
-</div>
+{% block content %}
+  {% from "_macros.html" import post_card %}
+  {% if knowhows %}
+    {% for kh in knowhows %}
+      {{ post_card(kh, url_for('kh_detail.show', knowhow_id=kh.id)) }}
+    {% endfor %}
+  {% else %}
+    <p class="empty-message">{{ message }}</p>
+  {% endif %}
+{% endblock %}

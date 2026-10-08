@@ -1,21 +1,17 @@
 {% extends "base.html" %}
+{% set show_footer = true %}
+{% set active_tab = 'event' %}
+{% set header_mode = 'search' %}
+{% set search_url = url_for('event_search.search') %}
+{% set post_url = url_for('user.event_post_view') %}
 
-<div class="container">
-    <h2>イベント一覧</h2>
-    <div class="actions">
-        <a href="{{ url_for('user.event_search') }}" class="btn">イベント検索</a>
-        <a href="{{ url_for('user.event_post') }}" class="btn primary">新規イベント投稿</a>
-    </div>
-
-    <div class="event-grid">
-        {% for event in events %}
-            <div class="card">
-                <h3><a href="{{ url_for('user.event_detail', id=event.id) }}">{{ event.title }}</a></h3>
-                <p>開催日時: {{ event.event_date }}</p>
-                <p>主催者: {{ event.organizer_name }}</p>
-            </div>
-        {% else %}
-            <p>イベントはありません。</p>
-        {% endfor %}
-    </div>
-</div>
+{% block content %}
+  {% from "_macros.html" import post_card %}
+  {% if events %}
+    {% for event in events %}
+      {{ post_card(event, url_for('event_detail.show', event_id=event.id), with_image=True) }}
+    {% endfor %}
+  {% else %}
+    <p class="empty-message">{{ message }}</p>
+  {% endif %}
+{% endblock %}
