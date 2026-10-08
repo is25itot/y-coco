@@ -1,0 +1,40 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>【管理者】ユーザー検索</h2>
+    <form action="{{ url_for('admin.user_search') }}" method="GET" class="search-form">
+        <input type="text" name="q" placeholder="ユーザー名またはIDを入力…" value="{{ request.args.get('q', '') }}">
+        <button type="submit" class="btn">検索</button>
+    </form>
+
+    <div class="search-results">
+        {% if results %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ユーザー名</th>
+                        <th>メールアドレス</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in results %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td><a href="{{ url_for('admin.user_detail', user_id=user.id) }}">{{ user.username }}</a></td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.user_delete_confirm', user_id=user.id) }}" class="btn-sm danger">削除</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>一致するユーザーが見つかりませんでした。</p>
+        {% endif %}
+    </div>
+</div>
+
+{% include 'footer.html' %}

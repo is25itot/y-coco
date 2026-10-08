@@ -1,0 +1,40 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>【管理者】ユーザー一覧</h2>
+    <div class="actions">
+        <a href="{{ url_for('admin.user_search') }}" class="btn">ユーザー検索</a>
+    </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ユーザー名</th>
+                <th>メールアドレス</th>
+                <th>登録日</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td><a href="{{ url_for('admin.user_detail', user_id=user.id) }}">{{ user.username }}</a></td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.created_at }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn-sm">詳細</a>
+                        <a href="{{ url_for('admin.user_delete_confirm', user_id=user.id) }}" class="btn-sm danger">削除</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">登録されているユーザーはありません。</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include 'footer.html' %}

@@ -1,0 +1,13 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>【管理者】ノウハウ削除の確認</h2>
+    <p>本当にノウハウ「<strong>{{ knowhow.title }}</strong>（ID: {{ knowhow.id }}）」を管理者権限で削除しますか？</p>
+
+    <form action="{{ url_for('admin.kh_delete', kh_id=knowhow.id) }}" method="POST">
+        <button type="submit" class="btn danger">削除実行</button>
+        <a href="{{ url_for('admin.kh_detail', kh_id=knowhow.id) }}" class="btn">キャンセル</a>
+    </form>
+</div>
+
+{% include 'footer.html' %}

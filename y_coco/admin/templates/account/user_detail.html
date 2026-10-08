@@ -1,0 +1,19 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>【管理者】ユーザー詳細情報</h2>
+    <div class="user-detail-card">
+        <p><strong>ユーザーID:</strong> {{ user.id }}</p>
+        <p><strong>ユーザー名:</strong> {{ user.username }}</p>
+        <p><strong>メールアドレス:</strong> {{ user.email }}</p>
+        <p><strong>登録日時:</strong> {{ user.created_at }}</p>
+        <p><strong>権限:</strong> {{ user.role }}</p>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('admin.user_delete_confirm', user_id=user.id) }}" class="btn danger">このユーザーを削除</a>
+        <a href="{{ url_for('admin.user_list') }}" class="btn">一覧へ戻る</a>
+    </div>
+</div>
+
+{% include 'footer.html' %}

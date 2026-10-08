@@ -1,0 +1,14 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>【管理者】ノウハウコメント削除の確認</h2>
+    <p>管理者権限で以下のコメントを削除しますか？</p>
+    <blockquote class="comment-preview">{{ comment.body }}</blockquote>
+
+    <form action="{{ url_for('admin.kh_comment_delete', comment_id=comment.id) }}" method="POST">
+        <button type="submit" class="btn danger">削除</button>
+        <a href="{{ url_for('admin.kh_detail', kh_id=comment.kh_id) }}" class="btn">キャンセル</a>
+    </form>
+</div>
+
+{% include 'footer.html' %}

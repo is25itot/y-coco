@@ -1,0 +1,14 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>【管理者】ユーザーアカウントの削除確認</h2>
+    <p>本当にユーザー「<strong>{{ user.username }}</strong>（ID: {{ user.id }}）」を強制削除しますか？</p>
+    <p class="warning-text">※削除されたアカウントおよび関連データは復元できません。</p>
+
+    <form action="{{ url_for('admin.user_delete', user_id=user.id) }}" method="POST">
+        <button type="submit" class="btn danger">削除実行</button>
+        <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn">キャンセル</a>
+    </form>
+</div>
+
+{% include 'footer.html' %}
