@@ -1,4 +1,4 @@
-{% include 'header.html' %}
+{% extends "base.html" %}
 
 <div class="container">
     <h2>{{ knowhow.title }}（投稿者用管理画面）</h2>
@@ -21,5 +21,3 @@
         {% endfor %}
     </section>
 </div>
-
-{% include 'footer.html' %}

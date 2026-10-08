@@ -1,4 +1,4 @@
-{% include 'header.html' %}
+{% extends "base.html" %}
 
 <div class="container">
     <h2>【管理者】ノウハウ詳細: {{ knowhow.title }}</h2>
@@ -26,5 +26,3 @@
         {% endfor %}
     </section>
 </div>
-
-{% include 'footer.html' %}

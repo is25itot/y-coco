@@ -1,4 +1,4 @@
-{% include 'header.html' %}
+{% extends "base.html" %}
 
 <div class="container">
     <h2>【管理者】イベント削除の確認</h2>
@@ -9,5 +9,3 @@
         <a href="{{ url_for('admin.event_detail', event_id=event.id) }}" class="btn">キャンセル</a>
     </form>
 </div>
-
-{% include 'footer.html' %}

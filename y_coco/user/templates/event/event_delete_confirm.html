@@ -1,4 +1,4 @@
-{% include 'header.html' %}
+{% extends "base.html" %}
 
 <div class="container">
     <h2>イベントの削除確認</h2>
@@ -9,5 +9,3 @@
         <a href="{{ url_for('user.event_detail_organizer', id=event.id) }}" class="btn">キャンセル</a>
     </form>
 </div>
-
-{% include 'footer.html' %}

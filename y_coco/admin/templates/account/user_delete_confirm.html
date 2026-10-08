@@ -1,4 +1,4 @@
-{% include 'header.html' %}
+{% extends "base.html" %}
 
 <div class="container">
     <h2>【管理者】ユーザーアカウントの削除確認</h2>
@@ -10,5 +10,3 @@
         <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn">キャンセル</a>
     </form>
 </div>
-
-{% include 'footer.html' %}
