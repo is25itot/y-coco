@@ -1,29 +1,9 @@
 {% extends "base.html" %}
 {% set header_mode = 'back' %}
-
-<div class="container">
-    <h2>{{ event.title }}</h2>
-    <div class="event-meta">
-        <p><strong>日時:</strong> {{ event.event_date }}</p>
-        <p><strong>場所:</strong> {{ event.location }}</p>
-        <p><strong>主催者:</strong> {{ event.organizer_name }}</p>
-    </div>
-    <div class="event-body">
-        <p>{{ event.description }}</p>
-    </div>
-
-    <section class="comments-section">
-        <h3>コメント一覧</h3>
-        {% for comment in comments %}
-            <div class="comment-box">
-                <p><strong>{{ comment.user_name }}</strong>: {{ comment.body }}</p>
-                <small>{{ comment.created_at }}</small>
-            </div>
-        {% endfor %}
-
-        <form action="{{ url_for('user.event_comment', event_id=event.id) }}" method="POST">
-            <textarea name="comment" placeholder="コメントを入力…" required></textarea>
-            <button type="submit" class="btn">送信</button>
-        </form>
-    </section>
-</div>
+{% block title %}{{ event.title }} | y-coco{% endblock %}
+{% block content %}
+  {% include "event_body.html" %}
+  {% set kind = 'event' %}
+  {% set post = event %}
+  {% include "comment_section.html" %}
+{% endblock %}
