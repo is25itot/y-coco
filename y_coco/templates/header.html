@@ -11,7 +11,36 @@
         <div class="header-container">
             <h1 class="logo"><a href="{{ url_for('index') }}">y-coco</a></h1>
             <nav class="nav-menu">
-                <a href="{{ url_for('index') }}">トップ</a>
+                <a href="{{ url_for('index') }}">トップ{# ヘッダー。base.html から include される。
+   使う変数(各画面で {% set %}): header_mode('search'|'back'|なし), search_url, back_url, post_url, header_title #}
+{% set cur_user = session.get('user') %}
+<header class="app-header">
+  <div class="h-left">
+    {% if header_mode == 'back' %}
+      <a href="{{ back_url or 'javascript:history.back()' }}" aria-label="戻る">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z"/></svg>
+      </a>
+    {% elif header_mode == 'search' and search_url %}
+      <a href="{{ search_url }}" aria-label="検索">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3A6.5 6.5 0 1 0 14 15.5l.3.3v.8l5 5 1.5-1.5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
+      </a>
+    {% endif %}
+  </div>
+  <div class="h-center">
+    {% if post_url %}<a class="btn-post" href="{{ post_url }}">投稿</a>
+    {% elif header_title %}<h1>{{ header_title }}</h1>{% endif %}
+  </div>
+  <div class="h-right">
+    {% if cur_user and cur_user.admin_flg %}
+      <a class="header-link" href="{{ url_for('logout.logout') }}">ログアウト</a>
+    {% elif cur_user %}
+      <a class="icon-circle" href="{{ url_for('account.notifications') }}" aria-label="通知">
+        <svg viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.1-1.6-5.6-4.5-6.3V4a1.5 1.5 0 0 0-3 0v.7C7.6 5.4 6 7.9 6 11v5l-2 2v1h16v-1z"/></svg>
+        {% if unread_count %}<span class="badge">{{ unread_count }}</span>{% endif %}
+      </a>
+    {% endif %}
+  </div>
+</header>/a>
                 {% if session.get('user') %}
                     <a href="{{ url_for('user.myaccount') }}">マイページ</a>
                     <a href="{{ url_for('logout') }}">ログアウト</a>
