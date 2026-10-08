@@ -21,6 +21,6 @@
            placeholder="パスワードを入力…" autocomplete="current-password">
     <button type="submit" class="btn">ログイン</button>
   </form>
-  <p class="right-align" style="margin-top:18px"><a href="{{ url_for('account.register') }}"><u>アカウントをお持ちでない方はこちら</u></a></p>
+  <a href="{{ url_for('user.register_view') }}"><u>アカウントをお持ちでない方はこちら</u></a></u></a></p>
 {% endif %}
 {% endblock %}

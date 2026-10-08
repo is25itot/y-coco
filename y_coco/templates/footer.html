@@ -2,7 +2,7 @@
 {% set cur_user = session.get('user') %}
 <nav class="app-footer">
   <a class="{{ 'active' if active_tab == 'account' }}"
-     href="{{ url_for('admin.account_list') if (cur_user and cur_user.admin_flg) else url_for('account.myaccount') }}">
+     href="{{ url_for('admin.account_list') if (cur_user and cur_user.admin_flg) else url_for('user.myaccount') }}">
     <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zm9 3.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM6.5 19c.5-3 2.8-4.5 5.5-4.5s5 1.500 5.500 4.500z" fill-rule="evenodd"/></svg>
     マイアカウント
   </a>
