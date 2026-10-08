@@ -1,0 +1,26 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>イベント新規投稿</h2>
+    <form action="{{ url_for('user.event_post') }}" method="POST">
+        <div class="form-group">
+            <label for="title">イベント名</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="event_date">開催日時</label>
+            <input type="datetime-local" id="event_date" name="event_date" required>
+        </div>
+        <div class="form-group">
+            <label for="location">開催場所</label>
+            <input type="text" id="location" name="location">
+        </div>
+        <div class="form-group">
+            <label for="description">詳細情報</label>
+            <textarea id="description" name="description" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn">投稿する</button>
+    </form>
+</div>
+
+{% include 'footer.html' %}

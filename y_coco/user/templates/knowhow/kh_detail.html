@@ -1,0 +1,26 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>{{ knowhow.title }}</h2>
+    <p class="meta-info">投稿者: {{ knowhow.author_name }} | 投稿日: {{ knowhow.created_at }}</p>
+
+    <div class="kh-content">
+        {{ knowhow.content }}
+    </div>
+
+    <section class="comments-section">
+        <h3>コメント</h3>
+        {% for comment in comments %}
+            <div class="comment-box">
+                <p><strong>{{ comment.user_name }}</strong>: {{ comment.body }}</p>
+            </div>
+        {% endfor %}
+
+        <form action="{{ url_for('user.kh_comment', kh_id=knowhow.id) }}" method="POST">
+            <textarea name="comment" placeholder="コメントを入力…" required></textarea>
+            <button type="submit" class="btn">送信</button>
+        </form>
+    </section>
+</div>
+
+{% include 'footer.html' %}

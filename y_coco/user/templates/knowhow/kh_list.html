@@ -1,0 +1,22 @@
+{% include 'header.html' %}
+
+<div class="container">
+    <h2>ノウハウ一覧</h2>
+    <div class="actions">
+        <a href="{{ url_for('user.kh_search') }}" class="btn">ノウハウ検索</a>
+        <a href="{{ url_for('user.kh_post') }}" class="btn primary">新規ノウハウ投稿</a>
+    </div>
+
+    <div class="kh-grid">
+        {% for kh in knowhows %}
+            <div class="card">
+                <h3><a href="{{ url_for('user.kh_detail', id=kh.id) }}">{{ kh.title }}</a></h3>
+                <p>投稿者: {{ kh.author_name }}</p>
+            </div>
+        {% else %}
+            <p>ノウハウ投稿はまだありません。</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% include 'footer.html' %}

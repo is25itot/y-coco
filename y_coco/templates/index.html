@@ -1,0 +1,23 @@
+{% include 'header.html' %}
+
+<div class="container index-container">
+    <section class="hero">
+        <h2>y-cocoへようこそ</h2>
+        <p>イベント共有とノウハウナレッジのプラットフォーム</p>
+    </section>
+
+    <section class="main-menu">
+        <div class="menu-card">
+            <h3>イベント機能</h3>
+            <p>開催予定のイベントの確認や、新しいイベントの投稿・管理を行えます。</p>
+            <a href="{{ url_for('user.event_list') }}" class="btn">イベント一覧を見る</a>
+        </div>
+        <div class="menu-card">
+            <h3>ノウハウ共有</h3>
+            <p>業務や学習に役立つノウハウの検索・投稿を行えます。</p>
+            <a href="{{ url_for('user.kh_list') }}" class="btn">ノウハウ一覧を見る</a>
+        </div>
+    </section>
+</div>
+
+{% include 'footer.html' %}
