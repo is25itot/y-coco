@@ -1,40 +1,18 @@
 {% extends "base.html" %}
+{% set show_footer = true %}
+{% set active_tab = 'knowhow' %}
+{% set header_mode = 'search' %}
+{% set show_back = true %}
+{% set search_url = url_for('kh_search.search') %}
+{% block title %}ノウハウ一覧 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>【管理者】ノウハウ管理一覧</h2>
-    <div class="actions">
-        <a href="{{ url_for('admin.kh_search') }}" class="btn">ノウハウ検索</a>
-    </div>
-
-    <table class="admin-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>タイトル</th>
-                <th>投稿者</th>
-                <th>投稿日時</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for kh in knowhows %}
-                <tr>
-                    <td>{{ kh.id }}</td>
-                    <td><a href="{{ url_for('admin.kh_detail', kh_id=kh.id) }}">{{ kh.title }}</a></td>
-                    <td>{{ kh.author_name }}</td>
-                    <td>{{ kh.created_at }}</td>
-                    <td>
-                        <a href="{{ url_for('admin.kh_detail', kh_id=kh.id) }}" class="btn-sm">詳細</a>
-                        <a href="{{ url_for('admin.kh_delete_confirm', kh_id=kh.id) }}" class="btn-sm danger">削除</a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="5">登録されているノウハウはありません。</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+  {% from "_macros.html" import post_card %}
+  {% if knowhows %}
+    {% for kh in knowhows %}
+      {{ post_card(kh, url_for('kh_detail.show', knowhow_id=kh.id)) }}
+    {% endfor %}
+  {% else %}
+    <p class="empty-message">{{ message }}</p>
+  {% endif %}
 {% endblock %}
