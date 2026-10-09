@@ -46,7 +46,6 @@ MSG_PASS_MISMATCH = "新しいパスワードと再入力のパスワードが�
 MSG_PASS_FAILED = "パスワードの更新に失敗しました"
 
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
-UPLOAD_SUBDIR = "uploads"  # static/ 配下の保存先。imagepath は "uploads/<UUID>.<拡張子>" (50文字以内)
 
 LOGIN_URL = "/login"
 MYACCOUNT_URL = "/account"  # マイアカウント画面のURLに合わせて変更
@@ -58,29 +57,23 @@ edit_bp = Blueprint("edit", __name__, template_folder="../templates")
 # 画像ファイルの扱い
 # ---------------------------------------------------------------------------
 def save_image(image, upload_root):
-    """画像にUUIDのファイル名を付けて保存し、DBに入れる相対パスを返す。
-
-    image       : filename 属性と save(path) メソッドを持つオブジェクト (werkzeugのFileStorage)
-    upload_root : 保存先の基準フォルダ (通常は Flask の static フォルダ)
-    例外        : 対応していない拡張子の場合 ValueError
-    """
+    """画像にUUIDのファイル名を付けて upload_root に保存し、ファイル名だけを返す。"""
     ext = os.path.splitext(image.filename or "")[1].lower()
     if ext not in ALLOWED_EXTENSIONS:
         raise ValueError(MSG_BAD_IMAGE)
 
-    new_filename = uuid.uuid4().hex + ext  # UUIDでファイル名を付け替える
-    save_dir = os.path.join(upload_root, UPLOAD_SUBDIR)
-    os.makedirs(save_dir, exist_ok=True)
-    image.save(os.path.join(save_dir, new_filename))
-    return f"{UPLOAD_SUBDIR}/{new_filename}"
+    new_filename = uuid.uuid4().hex + ext
+    os.makedirs(upload_root, exist_ok=True)
+    image.save(os.path.join(upload_root, new_filename))
+    return new_filename
 
 
-def _remove_image(upload_root, rel_path):
+def _remove_image(upload_root, filename):
     """保存済み画像を削除する (失敗しても処理は止めない)。"""
-    if not rel_path or os.path.isabs(rel_path) or ".." in rel_path.split("/"):
+    if not filename:
         return
     try:
-        os.remove(os.path.join(upload_root, rel_path))
+        os.remove(os.path.join(upload_root, os.path.basename(filename)))
     except OSError:
         pass
 

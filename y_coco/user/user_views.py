@@ -37,12 +37,12 @@ user/ 配下に作成済みの各モジュールをインポートして呼び�
 from flask import (
     Blueprint,
     flash,
-    jsonify,
     redirect,
     render_template,
     request,
     url_for,
     abort,
+    current_app,
 )
 from flask_login import current_user, login_required
 from werkzeug.routing import BuildError
@@ -161,20 +161,34 @@ def profile_edit():
     userid = _current_user_id()
 
     if request.method == "GET":
-        username = edit.get_username(userid)
-        return render_template("account/prof_edit.html", username=username)
+        return render_template("account/prof_edit.html",
+                               username=edit.get_username(userid))
 
-    code = edit.update_profile(
-        userid,
-        request.form.get("newusername", ""),
-        request.files.get("newimage"),
+    from y_coco.validation import ImageForm, UserForm
+
+    newusername = request.form.get("username", "").strip()
+    newimage = request.files.get("image")
+
+    ok = True
+    for form in (UserForm(), ImageForm()):
+        if not form.validate_on_submit():
+            for errors in form.errors.values():
+                for e in errors:
+                    flash(e, "error")
+            ok = False
+    if not ok:
+        return render_template("account/prof_edit.html", username=newusername), 400
+
+    code, error_msg = edit.update_profile(
+        userid, newusername, newimage,
+        upload_root=current_app.config["UPLOAD_FOLDER"],
     )
-    if code == 0:
-        return redirect(url_for("user.myaccount"))
+    if code != 0:
+        flash(error_msg or MSG_PROFILE_FAILED, "error")
+        return render_template("account/prof_edit.html", username=newusername), 400
 
-    flash(MSG_PROFILE_FAILED)
-    username = edit.get_username(userid)
-    return render_template("account/prof_edit.html", username=username), 400
+    flash("プロフィールを変更しました", "success")
+    return redirect(url_for("user.myaccount"))
 
 
 @user_bp.route("/password/change", methods=["GET", "POST"])

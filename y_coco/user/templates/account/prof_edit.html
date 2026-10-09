@@ -1,21 +1,25 @@
 {% extends "base.html" %}
-{% from "_macros.html" import csrf, avatar, fmt %}
+{% from "_macros.html" import csrf, avatar %}
+{% set header_mode = 'back' %}
+{% set back_url = url_for('user.myaccount') %}
 {% set active_tab = 'account' %}
 {% set show_footer = True %}
+{% block title %}プロフィール変更 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>プロフィール編集</h2>
-    <form action="{{ url_for('user.profile_edit') }}" method="POST">
-        <div class="form-group">
-            <label for="username">ユーザーネーム</label>
-            <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
-        </div>
-        <div class="form-group">
-            <label for="email">メールアドレス</label>
-            <input type="email" id="email" name="email" value="{{ current_user.email }}">
-        </div>
-        <button type="submit" class="btn">保存</button>
-    </form>
-</div>
+<form method="post" enctype="multipart/form-data" class="form-card">
+  {{ csrf() }}
+  <div class="account-top">{{ avatar(current_user.imagepath, 'lg') }}</div>
+
+  <label for="username">ユーザーネーム</label>
+  <input id="username" name="username" type="text" maxlength="10" required
+         value="{{ username or '' }}">
+
+  <label for="image">アイコン画像(1MBまで・変更する場合のみ)</label>
+  <input id="image" name="image" type="file" data-preview="preview"
+         accept="image/png,image/jpeg,image/gif,image/webp">
+  <img id="preview" class="image-preview" alt="">
+
+  <button type="submit" class="btn">保存</button>
+</form>
 {% endblock %}
