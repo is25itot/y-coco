@@ -1,8 +1,12 @@
 {% extends "base.html" %}
+{% from "_macros.html" import csrf, avatar, fmt %}
+{% set active_tab = 'account' %}
+{% set show_footer = True %}
 
+{% block content %}
 <div class="container">
     <h2>プロフィール編集</h2>
-    <form action="{{ url_for('user.prof_edit') }}" method="POST">
+    <form action="{{ url_for('user.profile_edit') }}" method="POST">
         <div class="form-group">
             <label for="username">ユーザーネーム</label>
             <input type="text" id="username" name="username" value="{{ user.username }}" required>
@@ -14,3 +18,4 @@
         <button type="submit" class="btn">保存</button>
     </form>
 </div>
+{% endblock %}

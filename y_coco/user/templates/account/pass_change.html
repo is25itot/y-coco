@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+{% from "_macros.html" import csrf, avatar, fmt %}
+{% set active_tab = 'account' %}
+{% set show_footer = True %}
 
+{% block content %}
 <div class="container">
     <h2>パスワードの変更</h2>
     <form action="{{ url_for('user.pass_change') }}" method="POST">
@@ -18,3 +22,4 @@
         <button type="submit" class="btn">完了</button>
     </form>
 </div>
+{% endblock %}
