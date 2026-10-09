@@ -3,7 +3,7 @@
 <h2 class="section-title">コメント</h2>
 {% if not admin_view %}
 <form class="comment-form" method="post"
-      action="{{ url_for('event_comment.post_comment', post_id=post.id) if kind == 'event' else url_for('knowhow_comment.post_comment', knowhow_id=post.id) }}">
+      action="{{ url_for('event_comment.post_comment', post_id=post.id) if kind == 'event' else url_for('knowhow_comment.post_comment', post_id=post.id) }}">
   {{ csrf() }}
   <textarea name="comment" data-autogrow maxlength="500" required placeholder="コメント入力欄"></textarea>
   <div style="margin-top:8px;text-align:right"><button type="submit" class="btn inline">返信</button></div>
@@ -16,7 +16,7 @@
         {% set href = url_for('admin.event_comment_delete_confirm', comment_id=c.id) if kind == 'event' else url_for('admin.kh_comment_delete_confirm', comment_id=c.id) %}
         {{ comment_card(c, href) }}
       {% elif c.user_id == userid %}
-        {% set href = url_for('event.comment_delete_confirm', comment_id=c.id) if kind == 'event' else url_for('knowhow.comment_delete_confirm', comment_id=c.id) %}
+        {% set href = url_for('user.event_comment_delete_confirm', comment_id=c.id) if kind == 'event' else url_for('user.kh_comment_delete_confirm', comment_id=c.id) %}
         {{ comment_card(c, href) }}
       {% else %}
         {{ comment_card(c) }}
