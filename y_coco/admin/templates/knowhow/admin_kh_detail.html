@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% block content %}
 <div class="container">
     <h2>【管理者】ノウハウ詳細: {{ knowhow.title }}</h2>
     <div class="admin-menu">
@@ -26,3 +27,4 @@
         {% endfor %}
     </section>
 </div>
+{% endblock %}

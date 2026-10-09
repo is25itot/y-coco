@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% block content %}
 <div class="container">
     <h2>【管理者】イベントコメント削除の確認</h2>
     <p>管理者権限で以下のコメントを削除しますか？</p>
@@ -10,3 +11,4 @@
         <a href="{{ url_for('admin.event_detail', event_id=comment.event_id) }}" class="btn">キャンセル</a>
     </form>
 </div>
+{% endblock %}

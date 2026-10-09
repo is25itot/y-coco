@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% block content %}
 <div class="container">
     <h2>【管理者】ノウハウ検索</h2>
     <form action="{{ url_for('admin.kh_search') }}" method="GET" class="search-form">
@@ -36,3 +37,4 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
