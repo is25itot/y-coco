@@ -1,11 +1,10 @@
 {% extends "base.html" %}
-
-<div class="container">
-    <h2>イベントの削除確認</h2>
-    <p>本当にイベント「<strong>{{ event.title }}</strong>」を削除してもよろしいですか？</p>
-
-    <form action="{{ url_for('user.event_delete', id=event.id) }}" method="POST">
-        <button type="submit" class="btn danger">削除実行</button>
-        <a href="{{ url_for('user.event_detail_organizer', id=event.id) }}" class="btn">キャンセル</a>
-    </form>
+{% from "_macros.html" import confirm_buttons %}
+{% set header_mode = 'back' %}
+{% block content %}
+<div class="confirm-box">
+  <p>「{{ event.title }}」を削除しますか?</p>
+  {{ confirm_buttons(url_for('user.delete_post', kind='event', post_id=event.id),
+                     url_for('event_detail.show', event_id=event.id)) }}
 </div>
+{% endblock %}

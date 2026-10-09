@@ -1,11 +1,10 @@
 {% extends "base.html" %}
-
-<div class="container">
-    <h2>ノウハウの削除確認</h2>
-    <p>本当にノウハウ「<strong>{{ knowhow.title }}</strong>」を削除してもよろしいですか？</p>
-
-    <form action="{{ url_for('user.kh_delete', id=knowhow.id) }}" method="POST">
-        <button type="submit" class="btn danger">削除実行</button>
-        <a href="{{ url_for('user.kh_detail_organizer', id=knowhow.id) }}" class="btn">キャンセル</a>
-    </form>
+{% from "_macros.html" import confirm_buttons %}
+{% set header_mode = 'back' %}
+{% block content %}
+<div class="confirm-box">
+  <p>「{{ knowhow.title }}」を削除しますか?</p>
+  {{ confirm_buttons(url_for('user.delete_post', kind='knowhow', post_id=knowhow.id),
+                     url_for('kh_detail.show', knowhow_id=knowhow.id)) }}
 </div>
+{% endblock %}

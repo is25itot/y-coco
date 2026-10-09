@@ -1,12 +1,9 @@
 {% extends "base.html" %}
-
-<div class="container">
-    <h2>コメントの削除確認</h2>
-    <p>以下のコメントを削除しますか？</p>
-    <blockquote class="comment-preview">{{ comment.body }}</blockquote>
-
-    <form action="{{ url_for('user.kh_comment_delete', comment_id=comment.id) }}" method="POST">
-        <button type="submit" class="btn danger">削除</button>
-        <a href="{{ url_for('user.kh_detail_organizer', id=comment.kh_id) }}" class="btn">キャンセル</a>
-    </form>
-</div>
+{% from "_macros.html" import confirm_buttons, comment_card %}
+{% set header_mode = 'back' %}
+{% block content %}
+<div class="confirm-box"><p>このコメントを削除しますか?</p></div>
+{{ comment_card(comment) }}
+{{ confirm_buttons(url_for('user.delete_post', kind='comment', post_id=comment.id),
+                   url_for('kh_detail.show', knowhow_id=comment.post_id)) }}
+{% endblock %}
