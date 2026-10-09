@@ -116,6 +116,7 @@ main.container.no-footer { padding-bottom: 32px; }
   display: inline-block; padding: 4px 18px; background: var(--navy); color: #fff;
   border-radius: 6px; font-size: .9rem; border: 0; cursor: pointer; font-family: inherit;
 }
+.delete-link.danger { background: var(--danger); }
 .right-align { text-align: right; margin-bottom: 8px; }
 
 /* ---- フォーム ---- */

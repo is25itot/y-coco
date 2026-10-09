@@ -1,31 +1,22 @@
 {% extends "base.html" %}
+{% set show_footer = true %}
+{% set active_tab = 'event' %}
+{% set header_mode = 'back' %}
+{% set back_url = url_for('event_list.index') %}
+{% block title %}{{ event.title if event else 'イベント' }} | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>【管理者】イベント詳細: {{ event.title }}</h2>
-    <div class="admin-menu">
-        <a href="{{ url_for('admin.event_delete_confirm', event_id=event.id) }}" class="btn danger">イベントを削除</a>
-    </div>
-
-    <div class="event-details">
-        <p><strong>イベントID:</strong> {{ event.id }}</p>
-        <p><strong>主催者:</strong> {{ event.organizer_name }} (ID: {{ event.user_id }})</p>
-        <p><strong>開催日時:</strong> {{ event.event_date }}</p>
-        <p><strong>開催場所:</strong> {{ event.location }}</p>
-        <p><strong>詳細:</strong></p>
-        <div class="event-body">{{ event.description }}</div>
-    </div>
-
-    <section class="comments-section">
-        <h3>コメント管理</h3>
-        {% for comment in comments %}
-            <div class="comment-item">
-                <p><strong>{{ comment.user_name }}</strong>: {{ comment.body }} <small>({{ comment.created_at }})</small></p>
-                <a href="{{ url_for('admin.event_comment_delete_confirm', comment_id=comment.id) }}" class="btn-sm danger">削除</a>
-            </div>
-        {% else %}
-            <p>コメントはありません。</p>
-        {% endfor %}
-    </section>
-</div>
+{% if event %}
+  <div class="right-align">
+    <a class="delete-link danger"
+       href="{{ url_for('admin.event_delete_confirm', event_id=event.id) }}">投稿を削除</a>
+  </div>
+  {% include "event_body.html" %}
+  {% set kind = 'event' %}
+  {% set post = event %}
+  {% set admin_view = true %}
+  {% include "comment_section.html" %}
+{% else %}
+  <p class="empty-message">{{ message }}</p>
+{% endif %}
 {% endblock %}
