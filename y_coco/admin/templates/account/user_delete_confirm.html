@@ -1,14 +1,18 @@
 {% extends "base.html" %}
+{% from "_macros.html" import confirm_buttons %}
+{% set show_footer = true %}
+{% set active_tab = 'account' %}
+{% set header_mode = 'back' %}
+{% set header_title = 'アカウント' %}
+{% set back_url = url_for('admin.account_detail', user_id=account.id) %}
+{% block title %}アカウントの削除 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>【管理者】ユーザーアカウントの削除確認</h2>
-    <p>本当にユーザー「<strong>{{ user.username }}</strong>（ID: {{ user.id }}）」を強制削除しますか？</p>
-    <p class="warning-text">※削除されたアカウントおよび関連データは復元できません。</p>
-
-    <form action="{{ url_for('admin.user_delete', user_id=user.id) }}" method="POST">
-        <button type="submit" class="btn danger">削除実行</button>
-        <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn">キャンセル</a>
-    </form>
+<h2 class="detail-title" style="text-align:center;font-size:1.6rem">{{ account.username }}</h2>
+<div class="confirm-box">
+  <p>削除しますか?</p>
+  <p class="muted" style="font-weight:normal">このアカウントの投稿・コメント・通知もすべて削除されます。</p>
+  {{ confirm_buttons(url_for('admin.account_delete', user_id=account.id),
+                     url_for('admin.account_detail', user_id=account.id)) }}
 </div>
 {% endblock %}

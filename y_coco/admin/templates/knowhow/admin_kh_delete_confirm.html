@@ -1,13 +1,13 @@
 {% extends "base.html" %}
+{% from "_macros.html" import confirm_buttons %}
+{% set header_mode = 'back' %}
+{% set back_url = url_for('kh_detail.show', knowhow_id=knowhow.id) %}
+{% block title %}ノウハウの削除 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>【管理者】ノウハウ削除の確認</h2>
-    <p>本当にノウハウ「<strong>{{ knowhow.title }}</strong>（ID: {{ knowhow.id }}）」を管理者権限で削除しますか？</p>
-
-    <form action="{{ url_for('admin.kh_delete', kh_id=knowhow.id) }}" method="POST">
-        <button type="submit" class="btn danger">削除実行</button>
-        <a href="{{ url_for('admin.kh_detail', kh_id=knowhow.id) }}" class="btn">キャンセル</a>
-    </form>
+<div class="confirm-box">
+  <p>このノウハウを<br>削除しますか?</p>
+  {{ confirm_buttons(url_for('admin.kh_delete', knowhow_id=knowhow.id),
+                     url_for('kh_detail.show', knowhow_id=knowhow.id)) }}
 </div>
 {% endblock %}

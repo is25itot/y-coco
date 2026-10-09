@@ -1,14 +1,12 @@
 {% extends "base.html" %}
+{% from "_macros.html" import confirm_buttons, comment_card %}
+{% set header_mode = 'back' %}
+{% set back_url = url_for('kh_detail.show', knowhow_id=comment.post_id) %}
+{% block title %}コメントの削除 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>【管理者】ノウハウコメント削除の確認</h2>
-    <p>管理者権限で以下のコメントを削除しますか？</p>
-    <blockquote class="comment-preview">{{ comment.body }}</blockquote>
-
-    <form action="{{ url_for('admin.kh_comment_delete', comment_id=comment.id) }}" method="POST">
-        <button type="submit" class="btn danger">削除</button>
-        <a href="{{ url_for('admin.kh_detail', kh_id=comment.kh_id) }}" class="btn">キャンセル</a>
-    </form>
-</div>
+<div class="confirm-box"><p>このコメントを<br>削除しますか?</p></div>
+{{ comment_card(comment) }}
+{{ confirm_buttons(url_for('admin.kh_comment_delete', comment_id=comment.id),
+                   url_for('kh_detail.show', knowhow_id=comment.post_id)) }}
 {% endblock %}

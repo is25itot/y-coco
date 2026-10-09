@@ -1,13 +1,13 @@
 {% extends "base.html" %}
+{% from "_macros.html" import confirm_buttons %}
+{% set header_mode = 'back' %}
+{% set back_url = url_for('event_detail.show', event_id=event.id) %}
+{% block title %}投稿の削除 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>【管理者】イベント削除の確認</h2>
-    <p>本当にイベント「<strong>{{ event.title }}</strong>（ID: {{ event.id }}）」を管理者権限で削除しますか？</p>
-
-    <form action="{{ url_for('admin.event_delete', event_id=event.id) }}" method="POST">
-        <button type="submit" class="btn danger">削除実行</button>
-        <a href="{{ url_for('admin.event_detail', event_id=event.id) }}" class="btn">キャンセル</a>
-    </form>
+<div class="confirm-box">
+  <p>この投稿を<br>削除しますか?</p>
+  {{ confirm_buttons(url_for('admin.event_delete', event_id=event.id),
+                     url_for('event_detail.show', event_id=event.id)) }}
 </div>
 {% endblock %}
