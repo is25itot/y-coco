@@ -11,7 +11,7 @@ from y_coco import db
 list_bp = Blueprint("event_list", __name__, template_folder="user/templates")
 
 USER_TEMPLATE = "event/list.html"
-ADMIN_TEMPLATE = "event/admin_user_list.html"
+ADMIN_TEMPLATE = "event/admin_event_list.html"
 
 SUMMARY_LIMIT = 50
 MSG_EMPTY = "イベントはまだ投稿されていません。"
