@@ -1,40 +1,19 @@
 {% extends "base.html" %}
+{% set show_footer = true %}
+{% set active_tab = 'event' %}
+{% set header_mode = 'search' %}
+{% set show_back = true %}
+{% set search_url = url_for('event_search.search') %}
+{# 管理者は投稿しないので post_url は設定しない #}
+{% block title %}イベント一覧 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>【管理者】イベント管理一覧</h2>
-    <div class="actions">
-        <a href="{{ url_for('admin.event_search') }}" class="btn">イベント検索</a>
-    </div>
-
-    <table class="admin-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>イベント名</th>
-                <th>主催者</th>
-                <th>開催日時</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for event in events %}
-                <tr>
-                    <td>{{ event.id }}</td>
-                    <td><a href="{{ url_for('admin.event_detail', event_id=event.id) }}">{{ event.title }}</a></td>
-                    <td>{{ event.organizer_name }}</td>
-                    <td>{{ event.event_date }}</td>
-                    <td>
-                        <a href="{{ url_for('admin.event_detail', event_id=event.id) }}" class="btn-sm">詳細</a>
-                        <a href="{{ url_for('admin.event_delete_confirm', event_id=event.id) }}" class="btn-sm danger">削除</a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="5">登録されているイベントはありません。</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+  {% from "_macros.html" import post_card %}
+  {% if events %}
+    {% for event in events %}
+      {{ post_card(event, url_for('event_detail.show', event_id=event.id), with_image=True) }}
+    {% endfor %}
+  {% else %}
+    <p class="empty-message">{{ message }}</p>
+  {% endif %}
 {% endblock %}

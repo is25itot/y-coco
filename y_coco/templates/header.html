@@ -1,11 +1,12 @@
 {% set cur_user = current_user if current_user.is_authenticated else none %}
 <header class="app-header">
-  <div class="h-left">
-    {% if header_mode == 'back' %}
+    <div class="h-left">
+    {% if header_mode == 'back' or (header_mode == 'search' and show_back) %}
       <a href="{{ back_url or 'javascript:history.back()' }}" aria-label="戻る">
         <svg viewBox="0 0 24 24"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z"/></svg>
       </a>
-    {% elif header_mode == 'search' and search_url %}
+    {% endif %}
+    {% if header_mode == 'search' and search_url %}
       <a href="{{ search_url }}" aria-label="検索">
         <svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3A6.5 6.5 0 1 0 14 15.5l.3.3v.8l5 5 1.5-1.5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
       </a>
