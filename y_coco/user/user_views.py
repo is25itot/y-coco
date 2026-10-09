@@ -147,7 +147,12 @@ def register_view():
 @user_bp.route("/myaccount")
 @login_required
 def myaccount():
-    return render_template("account/myaccount.html", user_id=_current_user_id())
+    uid = _current_user_id()
+    return render_template(
+        "account/myaccount.html",
+        username=edit.get_username(uid),
+        imagepath=session["user"].get("imagepath"),
+    )
 
 
 @user_bp.route("/profile/edit", methods=["GET", "POST"])

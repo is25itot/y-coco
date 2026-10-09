@@ -1,24 +1,19 @@
 {% extends "base.html" %}
-{% set show_footer = true %}
+{% from "_macros.html" import avatar %}
 {% set active_tab = 'account' %}
+{% set show_footer = True %}
+{% block title %}マイアカウント | y-coco{% endblock %}
 
-<div class="container">
-    <h2>マイアカウント</h2>
-    <div class="profile-card">
-        <h3>ユーザー名: {{ user.username }}</h3>
-        <p><a href="{{ url_for('user.prof_edit') }}">プロフィール編集</a> | <a href="{{ url_for('user.pass_change') }}">パスワード変更</a></p>
-    </div>
-
-    <h3>自分の投稿</h3>
-    <div class="post-list">
-        {% for post in posts %}
-            <div class="post-card">
-                <h4>{{ post.title }}</h4>
-                <p>{{ post.summary }}</p>
-                <small>投稿者: {{ user.username }}</small>
-            </div>
-        {% else %}
-            <p>投稿はまだありません。</p>
-        {% endfor %}
-    </div>
+{% block content %}
+<div class="account-top">
+  {{ avatar(imagepath, 'lg') }}
+  <div class="name">ユーザー名:{{ username }}</div>
 </div>
+
+<ul class="menu-list">
+  <li><a href="{{ url_for('user.profile_edit') }}">プロフィール変更</a></li>
+  <li><a href="{{ url_for('user.password_change') }}">パスワード変更</a></li>
+  <li><a href="{{ url_for('user.my_posts') }}">過去の投稿を見る</a></li>
+  <li><a href="{{ url_for('logout.logout') }}">ログアウト</a></li>
+</ul>
+{% endblock %}
