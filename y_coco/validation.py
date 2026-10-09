@@ -18,7 +18,7 @@ ALNUM_PATTERN = r"[A-Za-z0-9]+\Z"
 ALNUM_MESSAGE = "半角英数字のみで入力してください"
 
 ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "webp"]
-MAX_IMAGE_SIZE = 1 * 1024 * 1024  # 1MB
+MAX_IMAGE_SIZE = 3 * 1024 * 1024  # 3MB
 DATE_FORMAT = "%Y-%m-%d"
 
 
@@ -45,7 +45,7 @@ def normalize_newline(value):
 
 
 def validate_image_size(form, field):
-    """画像のファイルサイズが1MB以内かチェックする"""
+    """画像のファイルサイズが3MB以内かチェックする"""
     file = field.data
     if not file or not getattr(file, "filename", ""):
         return  # 未選択はここでは判定しない
@@ -53,7 +53,7 @@ def validate_image_size(form, field):
     size = file.stream.tell()
     file.stream.seek(0)  # 後続の保存処理のため先頭に戻す
     if size > MAX_IMAGE_SIZE:
-        raise ValidationError("画像のファイルサイズは1MB以内にしてください")
+        raise ValidationError("画像のファイルサイズは3MB以内にしてください")
 
 
 def validate_date_format(form, field):

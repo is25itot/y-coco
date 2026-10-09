@@ -15,9 +15,9 @@
   <input id="username" name="username" type="text" maxlength="10" required
          value="{{ username or '' }}">
 
-  <label for="image">アイコン画像(1MBまで・変更する場合のみ)</label>
+  <label for="image">アイコン画像(3MBまで・変更する場合のみ)</label>
   <input id="image" name="image" type="file" data-preview="preview"
-         accept="image/png,image/jpeg,image/gif,image/webp">
+         accept="image/png,image/jpg,image/jpeg,image/gif,image/webp">
   <img id="preview" class="image-preview" alt="">
 
   <button type="submit" class="btn">保存</button>

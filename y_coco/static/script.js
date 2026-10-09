@@ -10,14 +10,14 @@ document.addEventListener("DOMContentLoaded", function () {
     grow();
   });
 
-  // 画像選択: プレビュー表示 (1MB 超は選択時に警告)
+  // 画像選択: プレビュー表示 (5MB 超は選択時に警告)
   document.querySelectorAll("input[type=file][data-preview]").forEach(function (input) {
     var img = document.getElementById(input.dataset.preview);
     input.addEventListener("change", function () {
       var file = input.files && input.files[0];
       if (!file) { if (img) img.style.display = "none"; return; }
-      if (file.size > 1024 * 1024) {
-        alert("画像は1MBまでです。別の画像を選んでください。");
+      if (file.size > 3 * 1024 * 1024) {
+        alert("画像は3MBまでです。別の画像を選んでください。");
         input.value = "";
         if (img) img.style.display = "none";
         return;
