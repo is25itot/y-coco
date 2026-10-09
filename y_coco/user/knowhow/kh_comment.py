@@ -50,8 +50,8 @@ CODE_COMMENT_FAILED = 6
 
 POST_TYPE_KNOWHOW = 2  # comment.post_type / notification.post_type の値 (ノウハウ)
 
-LOGIN_ENDPOINT = "login"  # login.py 側のエンドポイント名に合わせる
-DETAIL_ENDPOINT = "kh_detail"  # kh_detail.py 側のエンドポイント名に合わせる
+LOGIN_ENDPOINT = "login.login"  # login.py 側のエンドポイント名に合わせる
+DETAIL_ENDPOINT = "kh_detail.show"  # kh_detail.py 側のエンドポイント名に合わせる
 
 FIND_POST_SQL = "SELECT user_id FROM knowhow WHERE id = %s"
 INSERT_SQL = (
@@ -81,7 +81,7 @@ def _url(endpoint, fallback, **values):
 
 
 def _detail_url(post_id):
-    return _url(DETAIL_ENDPOINT, f"/knowhow/{post_id}", post_id=post_id)
+    return _url(DETAIL_ENDPOINT, f"/knowhow/{post_id}", knowhow_id=post_id)
 
 
 def _owner_id(row):
@@ -178,9 +178,9 @@ def save_comment(user_id, post_id, comment_text):
 # --- ルート -----------------------------------------------------------
 @knowhow_comment_bp.route("/<int:post_id>/comment", methods=["POST"])
 def post_comment(post_id):
-    user_id = current_user.is_authenticated
-    if user_id is None:
+    if not current_user.is_authenticated:
         return redirect(_url(LOGIN_ENDPOINT, "/login"))
+    user_id = current_user.id
 
     # バリデーションチェック (is_valid)
     form = CommentForm()

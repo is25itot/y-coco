@@ -42,10 +42,14 @@ from flask import (
     render_template,
     request,
     url_for,
+    abort,
 )
 from flask_login import current_user, login_required
 from werkzeug.routing import BuildError
 
+from y_coco.db import POST_TYPE_EVENT, POST_TYPE_KNOWHOW, connection_scope
+from y_coco.detail import load_event_detail
+from y_coco.kh_detail import load_kh_detail
 from y_coco.user.account import delete, edit, myposts, notification_check, register
 
 user_bp = Blueprint("user", __name__, template_folder="templates")
@@ -78,11 +82,7 @@ MSG_COMMENT_FAILED = "コメントの保存に失敗しました"
 # 共通処理
 # ---------------------------------------------------------------------------
 def _current_user_id():
-    """セッションからユーザーIDを取得する。未ログインなら None。"""
-    user = current_user.is_authenticated
-    if isinstance(user, dict):
-        return user.get("id")
-    return user
+    return current_user.id if current_user.is_authenticated else None
 
 
 def login_required(view):
@@ -221,7 +221,7 @@ def delete_post(kind, post_id):
     if kind not in DELETE_KINDS:
         return "Not Found", 404
 
-    code = delete.delete_post(post_id, _current_user_id(), kind)
+    code, _msg = delete.delete_post(post_id, _current_user_id(), kind)
     flash(MSG_DELETE_OK if code == 0 else MSG_DELETE_FAILED)
     return redirect(url_for("user.my_posts"))
 
@@ -253,3 +253,55 @@ def notifications_read():
 
     code = notification_check.mark_as_read(ids)
     return jsonify({"code": code}), (200 if code == 0 else 500)
+
+
+# ---------------------------------------------------------------------------
+# 削除確認画面 (GET)。実際の削除は delete_post (POST) が行う
+# ---------------------------------------------------------------------------
+def _load_comment(comment_id, post_type):
+    with connection_scope() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT c.id, c.user_id, c.post_id, c.comment, c.created_at, "
+                "u.username, u.imagepath AS usericon "
+                "FROM `comment` c JOIN users u ON u.id = c.user_id "
+                "WHERE c.id = %s AND c.post_type = %s",
+                (comment_id, post_type),
+            )
+            return cur.fetchone()
+
+
+@user_bp.route("/event/<int:event_id>/delete/confirm")
+@login_required
+def event_delete_confirm(event_id):
+    event, _ = load_event_detail(event_id)
+    if event is None or event["user_id"] != _current_user_id():
+        abort(404)
+    return render_template("event/event_delete_confirm.html", event=event)
+
+
+@user_bp.route("/knowhow/<int:knowhow_id>/delete/confirm")
+@login_required
+def kh_delete_confirm(knowhow_id):
+    knowhow, _ = load_kh_detail(knowhow_id)
+    if knowhow is None or knowhow["user_id"] != _current_user_id():
+        abort(404)
+    return render_template("knowhow/kh_delete_confirm.html", knowhow=knowhow)
+
+
+@user_bp.route("/event-comments/<int:comment_id>/delete/confirm")
+@login_required
+def event_comment_delete_confirm(comment_id):
+    comment = _load_comment(comment_id, POST_TYPE_EVENT)
+    if comment is None or comment["user_id"] != _current_user_id():
+        abort(404)
+    return render_template("event/event_comment_delete_confirm.html", comment=comment)
+
+
+@user_bp.route("/knowhow-comments/<int:comment_id>/delete/confirm")
+@login_required
+def kh_comment_delete_confirm(comment_id):
+    comment = _load_comment(comment_id, POST_TYPE_KNOWHOW)
+    if comment is None or comment["user_id"] != _current_user_id():
+        abort(404)
+    return render_template("knowhow/kh_comment_delete_confirm.html", comment=comment)
