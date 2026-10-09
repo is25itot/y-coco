@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% from "_macros.html" import csrf %}
+
 {% set header_mode = 'back' %}
 {% set back_url = url_for('event_list.index') %}
+{% set show_footer = True %}
+
 {% block title %}イベント投稿 | y-coco{% endblock %}
 
 {% block content %}

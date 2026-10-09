@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% from "_macros.html" import confirm_buttons, comment_card %}
+
 {% set header_mode = 'back' %}
 {% set back_url = url_for('event_detail.show', event_id=comment.post_id) %}
+
 {% block title %}コメントの削除 | y-coco{% endblock %}
 
 {% block content %}

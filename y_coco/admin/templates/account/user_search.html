@@ -1,8 +1,10 @@
 {% extends "base.html" %}
+
 {% set show_footer = true %}
 {% set active_tab = 'account' %}
 {% set header_mode = 'back' %}
 {% set header_title = '検索' %}
+
 {% set back_url = url_for('admin.account_list') %}
 {% block title %}アカウント検索 | y-coco{% endblock %}
 

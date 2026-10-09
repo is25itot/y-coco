@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% from "_macros.html" import fmt %}
+
 {% set show_footer = true %}
 {% set active_tab = 'account' %}
 {% set header_mode = 'back' %}
 {% set header_title = 'アカウント' %}
+
 {% set back_url = url_for('admin.account_list') %}
 {% block title %}{{ account.username }} | y-coco{% endblock %}
 

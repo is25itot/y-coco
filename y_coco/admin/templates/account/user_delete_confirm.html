@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% from "_macros.html" import confirm_buttons %}
+
 {% set show_footer = true %}
 {% set active_tab = 'account' %}
 {% set header_mode = 'back' %}
 {% set header_title = 'アカウント' %}
+
 {% set back_url = url_for('admin.account_detail', user_id=account.id) %}
 {% block title %}アカウントの削除 | y-coco{% endblock %}
 
