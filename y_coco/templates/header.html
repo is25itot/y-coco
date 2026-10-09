@@ -1,4 +1,4 @@
-{% set cur_user = current_user.is_authenticated %}
+{% set cur_user = current_user if current_user.is_authenticated else none %}
 <header class="app-header">
   <div class="h-left">
     {% if header_mode == 'back' %}

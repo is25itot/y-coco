@@ -13,6 +13,7 @@ comment.py / kh-comment.py など、コメントを保存する処理の後に
     2 ... 自分自身のコメントのため登録をスキップした
 """
 import logging
+from blinker import signal
 
 from y_coco.db import run_in_transaction
 
@@ -60,3 +61,13 @@ def notify_comment(post_owner_id, comment_user_id, post_id, post_type, db_conn=N
     if insert_result:
         return NOTIFY_OK, None
     return NOTIFY_ERROR, MSG_NOTIFY_FAILED
+
+
+comment_posted = signal("comment-posted")
+
+def _on_comment_posted(sender, sender_id=None, receiver_id=None,
+                       post_type=None, post_id=None, comment_id=None, **kwargs):
+    """コメント保存後のシグナルを受けて、投稿者へ通知を登録する。"""
+    notify_comment(receiver_id, sender_id, post_id, post_type)
+
+comment_posted.connect(_on_comment_posted)

@@ -21,6 +21,8 @@ from y_coco.user import user_views
 from y_coco.user.event import comment as event_comment
 from y_coco.user.event import post as event_post
 from y_coco.user.knowhow import kh_comment, kh_post
+from y_coco.user.account import notification  # noqa: F401  (シグナル受信の登録)
+from y_coco.user.account.notification_check import count_unread
 
 # Blueprint を持つモジュール(登録順)
 BLUEPRINT_MODULES = (
@@ -76,10 +78,13 @@ def create_app(test_config=None):
 
     @app.context_processor
     def inject_login_state():
-        """全テンプレートに login_flg を渡す。
-        ユーザー情報は flask-login が自動で渡す current_user を使う。
-        """
-        return {"login_flg": current_user.is_authenticated}
+        unread_count = 0
+        if current_user.is_authenticated and not current_user.admin_flg:
+            unread_count = count_unread(current_user.id)
+        return {
+            "login_flg": current_user.is_authenticated,
+            "unread_count": unread_count,
+        }
 
     @app.route("/")
     def index():

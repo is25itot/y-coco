@@ -1,18 +1,21 @@
 {% extends "base.html" %}
+{% from "_macros.html" import fmt %}
 {% set show_footer = true %}
 {% set active_tab = 'account' %}
 {% set header_mode = 'back' %}
-
-<div class="container">
-    <h2>通知一覧</h2>
-    <ul class="notification-list">
-        {% for notification in notifications %}
-            <li class="notification-item {% if not notification.is_read %}unread{% endif %}">
-                <p>{{ notification.message }}</p>
-                <small>{{ notification.created_at }}</small>
-            </li>
-        {% else %}
-            <li>通知はありません。</li>
-        {% endfor %}
-    </ul>
-</div>
+{% set back_url = url_for('user.myaccount') %}
+{% block title %}通知 | y-coco{% endblock %}
+{% block content %}
+{% if notification_list %}
+  {% for n in notification_list %}
+    {% set href = url_for('event_detail.show', event_id=n.post_id) if n.post_type == 1
+                  else url_for('kh_detail.show', knowhow_id=n.post_id) %}
+    <a class="card notice card-link {{ 'read' if n.read_flg else 'unread' }}" href="{{ href }}">
+      <div>{{ n.sender_name }}さんが「{{ n.post_title }}」にコメントしました</div>
+      <div class="when">{{ fmt(n.created_at) }}</div>
+    </a>
+  {% endfor %}
+{% else %}
+  <p class="empty-message">{{ display_msg }}</p>
+{% endif %}
+{% endblock %}

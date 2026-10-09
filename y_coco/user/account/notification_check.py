@@ -91,6 +91,22 @@ def mark_as_read(read_notification_ids, user_id, db_conn=None):
     return CODE_SUCCESS, None
 
 
+def count_unread(user_id, db_conn=None):
+    """未読の通知件数を返す (失敗時は 0)。"""
+    try:
+        with connection_scope(db_conn) as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT COUNT(*) AS cnt FROM notification "
+                    "WHERE receiver_id = %s AND read_flg = 0",
+                    (user_id,),
+                )
+                return cur.fetchone()["cnt"]
+    except Exception:
+        logger.exception("未読件数の取得中に例外が発生しました")
+        return 0
+
+
 # ---------------------------------------------------------------------------
 # 画面 (通知確認画面 GD8)
 # ---------------------------------------------------------------------------

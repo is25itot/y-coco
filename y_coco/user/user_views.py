@@ -232,27 +232,19 @@ def delete_post(kind, post_id):
 @user_bp.route("/notifications")
 @login_required
 def notifications():
-    notification_list, display_msg = notification_check.get_notifications(
-        _current_user_id()
-    )
+    uid = _current_user_id()
+    notification_list, display_msg = notification_check.get_notifications(uid)
+
+    # 画面に出した未読を既読にする (今回の表示では未読の強調が残る)
+    unread_ids = [n["notification_id"] for n in notification_list if not n["read_flg"]]
+    if unread_ids:
+        notification_check.mark_as_read(unread_ids, uid)
+
     return render_template(
         "account/notifications.html",
         notification_list=notification_list,
         display_msg=display_msg,
     )
-
-
-@user_bp.route("/notifications/read", methods=["POST"])
-@login_required
-def notifications_read():
-    """画面で確認した通知IDを既読にする。(JSON または フォームで受け取る)"""
-    payload = request.get_json(silent=True) or {}
-    ids = payload.get("read_notification_ids")
-    if ids is None:
-        ids = request.form.getlist("read_notification_ids")
-
-    code = notification_check.mark_as_read(ids)
-    return jsonify({"code": code}), (200 if code == 0 else 500)
 
 
 # ---------------------------------------------------------------------------

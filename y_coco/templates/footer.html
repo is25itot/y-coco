@@ -1,5 +1,5 @@
 {# フッター(3タブ)。active_tab: 'account' | 'event' | 'knowhow'。管理者はマイアカウントがアカウント一覧になる #}
-{% set cur_user = current_user.is_authenticated %}
+{% set cur_user = current_user if current_user.is_authenticated else none %}
 <nav class="app-footer">
   <a class="{{ 'active' if active_tab == 'account' }}"
      href="{{ url_for('admin.account_list') if (cur_user and cur_user.admin_flg) else url_for('user.myaccount') }}">
