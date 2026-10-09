@@ -3,7 +3,7 @@
 <h2 class="section-title">コメント</h2>
 {% if not admin_view %}
 <form class="comment-form" method="post"
-      action="{{ url_for('event.comment', event_id=post.id) if kind == 'event' else url_for('knowhow.comment', knowhow_id=post.id) }}">
+      action="{{ url_for('event_comment.post_comment', post_id=post.id) if kind == 'event' else url_for('knowhow_comment.post_comment', knowhow_id=post.id) }}">
   {{ csrf() }}
   <textarea name="comment" data-autogrow maxlength="500" required placeholder="コメント入力欄"></textarea>
   <div style="margin-top:8px;text-align:right"><button type="submit" class="btn inline">返信</button></div>
