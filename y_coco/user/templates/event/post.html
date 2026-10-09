@@ -3,6 +3,7 @@
 {% set header_mode = 'back' %}
 {% set back_url = url_for('event_list.index') %}
 {% block title %}イベント投稿 | y-coco{% endblock %}
+
 {% block content %}
 {% if ev_er_message %}
 <div class="flash error" style="white-space:pre-line">{{ ev_er_message }}</div>

@@ -3,6 +3,7 @@
 {% set active_tab = 'event' %}
 {% set header_mode = 'back' %}
 
+{% block content %}
 <div class="container">
     <h2>イベント検索</h2>
     <form action="{{ url_for('user.event_search') }}" method="GET" class="search-form">
@@ -23,3 +24,4 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}

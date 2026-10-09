@@ -3,6 +3,7 @@
 {% set header_mode = 'back' %}
 {% set back_url = url_for('kh_list.index') %}
 {% block title %}ノウハウ投稿 | y-coco{% endblock %}
+
 {% block content %}
 {% if kh_er_message %}
 <div class="flash error" style="white-space:pre-line">{{ kh_er_message }}</div>

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% from "_macros.html" import confirm_buttons, comment_card %}
 {% set header_mode = 'back' %}
+
 {% block content %}
 <div class="confirm-box"><p>このコメントを削除しますか?</p></div>
 {{ comment_card(comment) }}
