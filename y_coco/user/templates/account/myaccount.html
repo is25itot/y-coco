@@ -6,8 +6,8 @@
 
 {% block content %}
 <div class="account-top">
-  {{ avatar(imagepath, 'lg') }}
-  <div class="name">ユーザー名:{{ username }}</div>
+  {{ avatar(current_user.imagepath, 'lg') }}
+  <div class="name">ユーザー名:{{ current_user.username }}</div>
 </div>
 
 <ul class="menu-list">
