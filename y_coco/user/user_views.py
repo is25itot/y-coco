@@ -44,10 +44,11 @@ from flask import (
     abort,
     current_app,
 )
-from flask_login import current_user, login_required
+from flask_login import current_user, login_required, login_user
+from y_coco.auth import User
 from werkzeug.routing import BuildError
 
-from y_coco.db import POST_TYPE_EVENT, POST_TYPE_KNOWHOW, connection_scope
+from y_coco.db import POST_TYPE_EVENT, POST_TYPE_KNOWHOW, connection_scope, get_user_by_username
 from y_coco.detail import load_event_detail
 from y_coco.kh_detail import load_kh_detail
 from y_coco.user.account import delete, edit, myposts, notification_check, register
@@ -111,6 +112,10 @@ def _redirect_to(endpoint, fallback="/", **values):
 # ---------------------------------------------------------------------------
 @user_bp.route("/register", methods=["GET", "POST"])
 def register_view():
+    # すでにログイン中なら登録画面は見せない
+    if current_user.is_authenticated:
+        return _redirect_to(EVENT_LIST_ENDPOINT, fallback="/events")
+
     if request.method == "GET":
         return render_template("account/register.html")
 
@@ -137,8 +142,16 @@ def register_view():
         flash(error_msg or MSG_REGISTER_FAILED, "error")
         return render_template("account/register.html"), 400
 
+    # ★ 登録成功 → そのままログイン状態にする
+    row = get_user_by_username(username)
+    if row is None:
+        # 登録は成功したが取得できなかった場合は、通常のログイン画面へ
+        flash("アカウントを登録しました。ログインしてください", "success")
+        return _redirect_to(LOGIN_ENDPOINT, fallback="/login")
+
+    login_user(User(row))
     flash("アカウントを登録しました", "success")
-    return _redirect_to(LOGIN_ENDPOINT, fallback="/login")
+    return _redirect_to(EVENT_LIST_ENDPOINT, fallback="/events")
 
 
 # ---------------------------------------------------------------------------
