@@ -1,19 +1,46 @@
 {% extends "base.html" %}
+{% from "_macros.html" import fmt %}
+{% set show_footer = true %}
+{% set active_tab = 'account' %}
+{% set header_mode = 'back' %}
+{% set header_title = 'アカウント' %}
+{% set back_url = url_for('admin.account_list') %}
+{% block title %}{{ account.username }} | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>【管理者】ユーザー詳細情報</h2>
-    <div class="user-detail-card">
-        <p><strong>ユーザーID:</strong> {{ user.id }}</p>
-        <p><strong>ユーザー名:</strong> {{ user.username }}</p>
-        <p><strong>メールアドレス:</strong> {{ user.email }}</p>
-        <p><strong>登録日時:</strong> {{ user.created_at }}</p>
-        <p><strong>権限:</strong> {{ user.role }}</p>
-    </div>
+<h2 class="detail-title" style="text-align:center;font-size:1.6rem">{{ account.username }}</h2>
 
-    <div class="actions">
-        <a href="{{ url_for('admin.user_delete_confirm', user_id=user.id) }}" class="btn danger">このユーザーを削除</a>
-        <a href="{{ url_for('admin.user_list') }}" class="btn">一覧へ戻る</a>
+{% for p in posts %}
+  {% set href = url_for('event_detail.show', event_id=p.id) if p.post_type == 'event'
+                else url_for('kh_detail.show', knowhow_id=p.id) %}
+  <a class="card card-link" href="{{ href }}">
+    <div style="display:flex;justify-content:space-between" class="muted">
+      <span>{{ 'イベント' if p.post_type == 'event' else 'ノウハウ' }}</span>
+      <span>{{ fmt(p.created_at, '%Y/%m/%d') }}</span>
     </div>
-</div>
+    <div class="title" style="font-size:1.2rem;font-weight:bold;word-break:break-word">{{ p.title }}</div>
+  </a>
+{% endfor %}
+
+{% for c in comments %}
+  {% set href = url_for('event_detail.show', event_id=c.post_id) if c.post_type == 1
+                else url_for('kh_detail.show', knowhow_id=c.post_id) %}
+  <a class="card card-link" href="{{ href }}">
+    <div style="display:flex;justify-content:space-between" class="muted">
+      <span>コメント</span>
+      <span>{{ fmt(c.created_at, '%Y/%m/%d') }}</span>
+    </div>
+    <div style="font-size:1.1rem;word-break:break-word;white-space:pre-wrap">{{ c.comment }}</div>
+  </a>
+{% endfor %}
+
+{% if not posts and not comments %}
+  <p class="empty-message">投稿・コメントはありません。</p>
+{% endif %}
+
+{% if not account.admin_flg %}
+  <div style="margin-top:18px">
+    <a class="btn" href="{{ url_for('admin.account_delete_confirm', user_id=account.id) }}">削除</a>
+  </div>
+{% endif %}
 {% endblock %}

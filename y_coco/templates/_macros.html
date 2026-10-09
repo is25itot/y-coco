@@ -2,10 +2,12 @@
 {%- if csrf_token is defined -%}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{%- endif -%}
 {%- endmacro %}
 
+
 {# ユーザーアイコン。imagepath が無ければ既定アイコン #}
 {% macro avatar(path, cls='') -%}
 <img class="avatar {{ cls }}" alt="" src="{{ url_for('static', filename=('uploads/' ~ path) if path else 'images/default_icon.svg') }}">
 {%- endmacro %}
+
 
 {# 日付・日時の整形 (None / 文字列 / date / datetime に対応) #}
 {% macro fmt(value, pattern='%Y/%m/%d %H:%M') -%}
@@ -14,6 +16,7 @@
 {%- else -%}{{ value.strftime(pattern) }}
 {%- endif -%}
 {%- endmacro %}
+
 
 {# 一覧のカード。item: id/title/summary/username/usericon/(imagepath) #}
 {% macro post_card(item, href, with_image=False) -%}
@@ -29,6 +32,7 @@
 </a>
 {%- endmacro %}
 
+
 {# コメント1件。delete_href を渡すと削除リンクを出す #}
 {% macro comment_card(c, delete_href=None) -%}
 <div class="comment-card">
@@ -39,6 +43,7 @@
 </div>
 {%- endmacro %}
 
+
 {# はい / いいえ の確認ボタン。action は POST 先、back_href は「いいえ」の戻り先 #}
 {% macro confirm_buttons(action, back_href) -%}
 <form method="post" action="{{ action }}">
@@ -48,4 +53,15 @@
     <button type="submit" class="btn danger">Yes</button>
   </div>
 </form>
+{%- endmacro %}
+
+
+{# アカウントカード(管理者の一覧・検索結果)。a: id/username/imagepath/admin_flg #}
+{% macro account_card(a) -%}
+<a class="card card-link admin-row" href="{{ url_for('admin.account_detail', user_id=a.id) }}">
+  {{ avatar(a.imagepath, 'lg') }}
+  <span class="name" style="font-size:1.3rem;word-break:break-all">
+    {{ a.username }}{% if a.admin_flg %} <span class="muted">(管理者)</span>{% endif %}
+  </span>
+</a>
 {%- endmacro %}
