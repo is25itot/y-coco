@@ -5,7 +5,8 @@
 """
 import logging
 
-from flask import Blueprint, redirect, render_template, session
+from flask import Blueprint, redirect, render_template
+from flask_login import current_user, login_required
 
 from y_coco.db import POST_TYPE_EVENT, POST_TYPE_KNOWHOW, connection_scope
 
@@ -90,7 +91,7 @@ def get_my_posts(user_id, db_conn=None):
 # ---------------------------------------------------------------------------
 @myposts_bp.route("/account/myposts")
 def myposts():
-    user_id = session.get("user")  # セッションからユーザーIDを読み取る
+    user_id = current_user.is_authenticated
     if user_id is None:
         return redirect(LOGIN_URL)
 

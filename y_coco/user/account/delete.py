@@ -9,7 +9,8 @@
 """
 import logging
 
-from flask import Blueprint, flash, redirect, request, session
+from flask import Blueprint, flash, redirect, request
+from flask_login import current_user, login_required
 
 from y_coco.db import POST_TYPE_EVENT, POST_TYPE_KNOWHOW, run_in_transaction
 
@@ -96,7 +97,7 @@ def delete_post(post_id, user_id, target, db_conn=None):
 @delete_bp.route("/account/delete", methods=["POST"])
 def delete():
     # 削除は状態を変える操作なので GET ではなく POST で受ける
-    user_id = session.get("user")
+    user_id = current_user.is_authenticated
     if user_id is None:
         return redirect("/login")
 

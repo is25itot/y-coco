@@ -3,7 +3,8 @@
 開催前のイベントを ID の降順で取得し、一覧表示する。
 本文は 50 文字を超えたら末尾に「...」を付ける。管理者には管理者用テンプレートを使う。
 """
-from flask import Blueprint, redirect, render_template, session, url_for
+from flask import Blueprint, redirect, render_template, url_for
+from flask_login import current_user, login_required
 
 from y_coco import db
 
@@ -47,16 +48,16 @@ def fetch_event_list():
 
 @list_bp.route("/events")
 def index():
-    user = session.get("user")
+    user = current_user.is_authenticated
     if not user:
         return redirect(url_for("login.login"))
 
     events = fetch_event_list()
-    template = ADMIN_TEMPLATE if user.get("admin_flg") else USER_TEMPLATE
+    template = ADMIN_TEMPLATE if current_user.admin_flg else USER_TEMPLATE
     return render_template(
         template,
         events=events,
         result=bool(events),  # データなしなら False
         message=None if events else MSG_EMPTY,
-        userid=user["id"],
+        userid=current_user.id,
     )

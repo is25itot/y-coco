@@ -5,7 +5,7 @@
 処理の流れ
     1. 画面から送信された knowhow_title / knowhow_detail を受け取る
     2. KhForm でバリデーションチェック (er)。FALSE ならエラーメッセージを表示
-    3. session["user"] から userid を取得
+    3. current_user.is_authenticated から userid を取得
     4. DBコネクションを取得しトランザクション開始
     5. knowhow テーブルへ INSERT
     6. WHERE句で投稿内容を検索して確認 (er3)
@@ -26,9 +26,9 @@ from flask import (
     redirect,
     render_template,
     request,
-    session,
     url_for,
 )
+from flask_login import current_user, login_required
 from werkzeug.routing import BuildError
 
 from y_coco.db import get_connection
@@ -131,10 +131,10 @@ def save_knowhow_post(userid, title, detail):
 # --- ルート -----------------------------------------------------------
 @knowhow_post_bp.route("/post", methods=["GET", "POST"])
 def post_knowhow():
-    user = session.get("user")
+    user = current_user.is_authenticated
     if not user:
         return redirect(_url(LOGIN_ENDPOINT, "/login"))
-    userid = user["id"]
+    userid = current_user.id
 
     form = KhPostForm()
     if request.method == "GET":

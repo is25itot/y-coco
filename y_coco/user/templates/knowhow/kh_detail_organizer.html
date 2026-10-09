@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
+{% block content %}
 <div class="container">
     <h2>{{ knowhow.title }}（投稿者用管理画面）</h2>
     <div class="organizer-menu">
-        <a href="{{ url_for('user.kh_edit', id=knowhow.id) }}" class="btn">編集</a>
         <a href="{{ url_for('user.kh_delete_confirm', id=knowhow.id) }}" class="btn danger">削除</a>
     </div>
 
@@ -21,3 +21,4 @@
         {% endfor %}
     </section>
 </div>
+{% endblock %}

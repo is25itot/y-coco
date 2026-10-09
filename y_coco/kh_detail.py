@@ -3,7 +3,8 @@
 選択したノウハウと、そのコメントを取得して表示する。
 投稿者本人には投稿者用、管理者には管理者用のテンプレートを使う。
 """
-from flask import Blueprint, redirect, render_template, session, url_for
+from flask import Blueprint, redirect, render_template, url_for
+from flask_login import current_user, login_required
 
 from y_coco import db
 
@@ -55,26 +56,26 @@ def load_kh_detail(knowhow_id):
 
 def select_template(user, knowhow):
     """管理者 → 管理者用 / 投稿者本人 → 投稿者用 / それ以外 → 通常。"""
-    if user.get("admin_flg"):
+    if current_user.is_authenticated and current_user.admin_flg:
         return ADMIN_TEMPLATE
-    if knowhow is not None and knowhow["user_id"] == user["id"]:
+    if knowhow is not None and knowhow["user_id"] == current_user.id:
         return ORGANIZER_TEMPLATE
     return USER_TEMPLATE
 
 
 @kh_detail_bp.route("/knowhow/<int:knowhow_id>")
 def show(knowhow_id):
-    user = session.get("user")
+    user = current_user.is_authenticated
     if not user:
         return redirect(url_for("login.login"))
 
     knowhow, comment_list = load_kh_detail(knowhow_id)
-    template = select_template(user, knowhow)
+    template = select_template(current_user, knowhow)
 
     if knowhow is None:
         return render_template(
             template, knowhow=None, comment_list=[], comment_message=None,
-            message=MSG_NOT_FOUND, code=ERROR_KH_NOT_FOUND, userid=user["id"],
+            message=MSG_NOT_FOUND, code=ERROR_KH_NOT_FOUND, userid=current_user.id,
         ), 404
 
     return render_template(
@@ -84,5 +85,5 @@ def show(knowhow_id):
         comment_message=None if comment_list else MSG_NO_COMMENT,
         message=None,
         code=0,
-        userid=user["id"],
+        userid=current_user.id,
     )

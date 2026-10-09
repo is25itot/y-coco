@@ -4,7 +4,8 @@
 """
 import logging
 
-from flask import Blueprint, jsonify, redirect, render_template, request, session
+from flask import Blueprint, jsonify, redirect, render_template, request
+from flask_login import current_user, login_required
 
 from y_coco.db import connection_scope, run_in_transaction
 
@@ -95,7 +96,7 @@ def mark_as_read(read_notification_ids, user_id, db_conn=None):
 # ---------------------------------------------------------------------------
 @notification_check_bp.route("/account/notifications")
 def notifications():
-    user_id = session.get("user")
+    user_id = current_user.is_authenticated
     if user_id is None:
         return redirect(LOGIN_URL)
 
@@ -108,7 +109,7 @@ def notifications():
 @notification_check_bp.route("/account/notifications/read", methods=["POST"])
 def notifications_read():
     """画面を閉じるときに JS から {"ids": [1, 2, ...]} を送って既読にする。"""
-    user_id = session.get("user")
+    user_id = current_user.is_authenticated
     if user_id is None:
         return jsonify(code=CODE_ERROR), 401
 

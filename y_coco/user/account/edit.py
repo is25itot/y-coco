@@ -19,7 +19,9 @@ import os
 import uuid
 
 from flask import (Blueprint, current_app, flash, redirect, render_template,
-                   request, session)
+                   request)
+from flask_login import current_user, login_required
+
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from y_coco.db import connection_scope, run_in_transaction
@@ -246,7 +248,7 @@ def _validate_password():
 
 @edit_bp.route("/account/profile/edit", methods=["GET", "POST"])
 def profile_edit():
-    user_id = session.get("user")
+    user_id = current_user.is_authenticated
     if user_id is None:
         return redirect(LOGIN_URL)
 
@@ -270,7 +272,7 @@ def profile_edit():
 
 @edit_bp.route("/account/password/edit", methods=["GET", "POST"])
 def pass_change():
-    user_id = session.get("user")
+    user_id = current_user.is_authenticated
     if user_id is None:
         return redirect(LOGIN_URL)
 

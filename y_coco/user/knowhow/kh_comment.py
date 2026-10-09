@@ -6,7 +6,7 @@
     1. 入力フォーム(コメント)から comment_text を読み取る
     2. CommentForm でバリデーションチェック (is_valid)
          is_valid = FALSE -> エラーメッセージを出力し処理を中止
-    3. user_id を受け取る (改ざん防止のため画面ではなく session["user"] から取得)
+    3. user_id を受け取る (改ざん防止のため画面ではなく current_user.is_authenticated から取得)
     4. DB接続を確立しトランザクション開始
     5. INSERT 文で comment テーブルに新規レコードを挿入 (insert_result)
     6. is_success = TRUE  -> コミットし通知イベントを送信, code = 0
@@ -29,9 +29,9 @@ from flask import (
     redirect,
     render_template_string,
     request,
-    session,
     url_for,
 )
+from flask_login import current_user, login_required
 from werkzeug.routing import BuildError
 
 from y_coco.db import get_connection
@@ -178,7 +178,7 @@ def save_comment(user_id, post_id, comment_text):
 # --- ルート -----------------------------------------------------------
 @knowhow_comment_bp.route("/<int:post_id>/comment", methods=["POST"])
 def post_comment(post_id):
-    user_id = session.get("user")
+    user_id = current_user.is_authenticated
     if user_id is None:
         return redirect(_url(LOGIN_ENDPOINT, "/login"))
 

@@ -1,4 +1,4 @@
-{% set cur_user = session.get('user') %}
+{% set cur_user = current_user.is_authenticated %}
 <header class="app-header">
   <div class="h-left">
     {% if header_mode == 'back' %}

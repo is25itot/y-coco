@@ -41,9 +41,9 @@ from flask import (
     redirect,
     render_template,
     request,
-    session,
     url_for,
 )
+from flask_login import current_user, login_required
 from werkzeug.routing import BuildError
 
 from y_coco.user.account import delete, edit, myposts, notification_check, register
@@ -79,7 +79,7 @@ MSG_COMMENT_FAILED = "コメントの保存に失敗しました"
 # ---------------------------------------------------------------------------
 def _current_user_id():
     """セッションからユーザーIDを取得する。未ログインなら None。"""
-    user = session.get("user")
+    user = current_user.is_authenticated
     if isinstance(user, dict):
         return user.get("id")
     return user
@@ -151,7 +151,7 @@ def myaccount():
     return render_template(
         "account/myaccount.html",
         username=edit.get_username(uid),
-        imagepath=session["user"].get("imagepath"),
+        imagepath=current_user.imagepath,
     )
 
 

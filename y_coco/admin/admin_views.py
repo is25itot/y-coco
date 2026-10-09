@@ -13,7 +13,8 @@ kh_*.py) が管理者を判定して管理者用テンプレートを使うた�
 import os
 
 from flask import (Blueprint, abort, current_app, flash, redirect,
-                   render_template, request, session, url_for)
+                   render_template, request, url_for)
+from flask_login import current_user, login_required
 
 from y_coco import db
 from y_coco.detail import POST_TYPE_EVENT, load_event_detail
@@ -37,7 +38,7 @@ MAX_QUERY_LENGTH = 100
 
 @admin_bp.before_request
 def require_admin():
-    user = session.get("user")
+    user = current_user.is_authenticated
     if not user:
         return redirect(url_for("login.login"))
     if not user.get("admin_flg"):

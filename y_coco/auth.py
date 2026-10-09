@@ -5,7 +5,6 @@
   - ログイン中ユーザー  : flask_login.current_user (id, username, imagepath, admin_flg)
   - ログイン必須の画面  : flask_login.login_required
   - 管理者必須の画面    : auth.admin_required
-session["user"] は使わない。
 """
 from functools import wraps
 

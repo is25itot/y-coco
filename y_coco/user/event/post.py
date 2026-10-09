@@ -5,7 +5,7 @@
 処理の流れ
     1. 画面から送信された各入力項目を受け取る
     2. PostForm でバリデーションチェック (er)。FALSE ならエラーメッセージを表示
-    3. session["user"] から userid を取得
+    3. current_user.is_authenticated から userid を取得
     4. DBコネクションを取得しトランザクション開始
     5. 画像が選ばれていれば新しいUUIDを発行し、ファイル名をUUIDに変更 (image_path)
     6. event_post テーブルへ INSERT
@@ -28,9 +28,9 @@ from flask import (
     redirect,
     render_template,
     request,
-    session,
     url_for,
 )
+from flask_login import current_user, login_required
 from werkzeug.routing import BuildError
 
 from y_coco.db import get_connection
@@ -251,10 +251,10 @@ def save_event_post(userid, data, image_file=None):
 # --- ルート -----------------------------------------------------------
 @event_post_bp.route("/post", methods=["GET", "POST"])
 def post_event():
-    user = session.get("user")
+    user = current_user.is_authenticated
     if not user:
         return redirect(_url(LOGIN_ENDPOINT, "/login"))
-    userid = user["id"]
+    userid = current_user.id
 
     form = PostForm()
     if request.method == "GET":

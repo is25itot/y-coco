@@ -5,7 +5,8 @@ Janome が未インストールの場合は空白区切りで代用する。
 """
 from functools import lru_cache
 
-from flask import Blueprint, redirect, render_template, request, session, url_for
+from flask import Blueprint, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
 
 from y_coco import db
 
@@ -100,7 +101,7 @@ def search_events(words):
 
 @search_bp.route("/events/search")
 def search():
-    user = session.get("user")
+    user = current_user.is_authenticated
     if not user:
         return redirect(url_for("login.login"))
 
