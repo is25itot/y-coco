@@ -1,29 +1,26 @@
 {% extends "base.html" %}
+{% from "_macros.html" import fmt %}
+{% set show_footer = true %}
+{% set active_tab = 'account' %}
+{% set header_mode = 'back' %}
+{% set back_url = url_for('user.myaccount') %}
+{% block title %}過去の投稿 | y-coco{% endblock %}
 
-<div class="container">
-    <h2>自分の投稿一覧</h2>
-
-    <section class="post-section">
-        <h3>イベント投稿</h3>
-        {% for event in events %}
-            <div class="post-item">
-                <h4><a href="{{ url_for('user.event_detail_organizer', id=event.id) }}">{{ event.title }}</a></h4>
-                <small>投稿日時: {{ event.created_at }}</small>
-            </div>
-        {% else %}
-            <p>投稿したイベントはありません。</p>
-        {% endfor %}
-    </section>
-
-    <section class="post-section">
-        <h3>ノウハウ投稿</h3>
-        {% for kh in knowhows %}
-            <div class="post-item">
-                <h4><a href="{{ url_for('user.kh_detail_organizer', id=kh.id) }}">{{ kh.title }}</a></h4>
-                <small>投稿日時: {{ kh.created_at }}</small>
-            </div>
-        {% else %}
-            <p>投稿したノウハウはありません。</p>
-        {% endfor %}
-    </section>
-</div>
+{% block content %}
+{% if post_list %}
+  {% for p in post_list %}
+    {% set href = url_for('event_detail.show', event_id=p.post_id) if p.post_type == 1
+                  else url_for('kh_detail.show', knowhow_id=p.post_id) %}
+    <a class="card post-card card-link" href="{{ href }}">
+      <div>
+        <div class="muted">{{ 'イベント' if p.post_type == 1 else 'ノウハウ' }}</div>
+        <div class="title">{{ p.title }}</div>
+        <div class="summary">{{ p.body_preview }}</div>
+        <div class="muted">{{ fmt(p.created_at) }}</div>
+      </div>
+    </a>
+  {% endfor %}
+{% else %}
+  <p class="empty-message">{{ display_msg }}</p>
+{% endif %}
+{% endblock %}
