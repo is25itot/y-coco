@@ -38,10 +38,9 @@ MAX_QUERY_LENGTH = 100
 
 @admin_bp.before_request
 def require_admin():
-    user = current_user.is_authenticated
-    if not user:
+    if not current_user.is_authenticated:
         return redirect(url_for("login.login"))
-    if not user.get("admin_flg"):
+    if not current_user.admin_flg:   # auth.User.admin_flg は bool
         abort(403)
     return None
 
