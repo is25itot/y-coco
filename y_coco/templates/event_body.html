@@ -1,5 +1,5 @@
 {# イベント詳細本体。変数: event #}
-{% from "_macros.html" import csrf %}
+{% from "_macros.html" import csrf, avatar, fmt %}
 <article class="card">
   <div class="detail-head">
     <span class="post-meta" style="margin:0">{{ avatar(event.usericon) }}<span>{{ event.username }}</span></span>
