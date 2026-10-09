@@ -1,25 +1,26 @@
 {% extends "base.html" %}
-{% from "_macros.html" import csrf, avatar, fmt %}
+{% from "_macros.html" import csrf %}
+{% set header_mode = 'back' %}
+{% set back_url = url_for('user.myaccount') %}
 {% set active_tab = 'account' %}
 {% set show_footer = True %}
+{% block title %}パスワード変更 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>パスワードの変更</h2>
-    <form action="{{ url_for('user.pass_change') }}" method="POST">
-        <div class="form-group">
-            <label for="current_password">現在のパスワード</label>
-            <input type="password" id="current_password" name="current_password" placeholder="パスワードを入力…" required>
-        </div>
-        <div class="form-group">
-            <label for="new_password">新しいパスワード</label>
-            <input type="password" id="new_password" name="new_password" placeholder="パスワードを入力…" required>
-        </div>
-        <div class="form-group">
-            <label for="confirm_password">パスワード再入力</label>
-            <input type="password" id="confirm_password" name="confirm_password" placeholder="パスワードをもう一度入力…" required>
-        </div>
-        <button type="submit" class="btn">完了</button>
-    </form>
-</div>
+<form method="post" class="form-card">
+  {{ csrf() }}
+  <label for="nowpass">現在のパスワード</label>
+  <input id="nowpass" name="nowpass" type="password" maxlength="64" required
+         placeholder="パスワードを入力…" autocomplete="current-password">
+
+  <label for="newpass">新しいパスワード</label>
+  <input id="newpass" name="newpass" type="password" maxlength="64" required
+         placeholder="パスワードを入力…" autocomplete="new-password">
+
+  <label for="repass">パスワード再入力</label>
+  <input id="repass" name="repass" type="password" maxlength="64" required
+         placeholder="パスワードをもう一度入力…" autocomplete="new-password">
+
+  <button type="submit" class="btn">完了</button>
+</form>
 {% endblock %}

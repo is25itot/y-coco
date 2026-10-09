@@ -132,3 +132,23 @@ class CommentForm(FlaskForm):
         "comment",
         validators=[required("comment"), length("comment", 5, 500)],
     )
+
+
+class PassChangeForm(FlaskForm):
+    """パスワード変更画面用 (項目名は画面の nowpass / newpass / repass に合わせる)"""
+    nowpass = PasswordField(
+        "nowpass",
+        validators=[required("現在のパスワード")],
+    )
+    newpass = PasswordField(
+        "newpass",
+        validators=[
+            required("新しいパスワード"),
+            length("新しいパスワード", 8, 64),
+            Regexp(ALNUM_PATTERN, message=ALNUM_MESSAGE),
+        ],
+    )
+    repass = PasswordField(
+        "repass",
+        validators=[required("パスワード再入力")],
+    )

@@ -197,17 +197,27 @@ def password_change():
     if request.method == "GET":
         return render_template("account/pass_change.html")
 
-    code = edit.change_password(
-        _current_user_id(),
-        request.form.get("nowpass", ""),
-        request.form.get("newpass", ""),
-        request.form.get("repass", ""),
-    )
-    if code == 0:
-        return redirect(url_for("user.myaccount"))
+    from y_coco.validation import PassChangeForm
 
-    flash(MSG_PASSWORD_FAILED)
-    return render_template("account/pass_change.html"), 400
+    form = PassChangeForm()
+    if not form.validate_on_submit():
+        for errors in form.errors.values():
+            for e in errors:
+                flash(e, "error")
+        return render_template("account/pass_change.html"), 400
+
+    code, error_msg = edit.change_password(
+        _current_user_id(),
+        form.nowpass.data,
+        form.newpass.data,
+        form.repass.data,
+    )
+    if code != 0:
+        flash(error_msg or MSG_PASSWORD_FAILED, "error")
+        return render_template("account/pass_change.html"), 400
+
+    flash("パスワードを変更しました", "success")
+    return redirect(url_for("user.myaccount"))
 
 
 # ---------------------------------------------------------------------------
