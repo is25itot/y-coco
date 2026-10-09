@@ -101,17 +101,16 @@ def search_events(words):
 
 @search_bp.route("/events/search")
 def search():
-    user = current_user.is_authenticated
-    if not user:
+    if not current_user.is_authenticated:
         return redirect(url_for("login.login"))
 
-    template = ADMIN_TEMPLATE if user.get("admin_flg") else USER_TEMPLATE
+    template = ADMIN_TEMPLATE if current_user.admin_flg else USER_TEMPLATE
     query = request.args.get("q", "").strip()[:MAX_QUERY_LENGTH]
 
     if not query:
         return render_template(
             template, query="", words=[], results=[], searched=False,
-            has_result=False, message=None, userid=user["id"],
+            has_result=False, message=None, userid=current_user.id,
         )
 
     words = split_words(query)
@@ -125,5 +124,5 @@ def search():
         searched=True,
         has_result=has_result,
         message=None if has_result else MSG_NO_RESULT,
-        userid=user["id"],
+        userid=current_user.id,
     )

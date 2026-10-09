@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import post_card %}
 {% set show_footer = true %}
 {% set active_tab = 'knowhow' %}
 {% set header_mode = 'back' %}
@@ -6,7 +7,7 @@
 {% block content %}
 <div class="container">
     <h2>ノウハウ検索</h2>
-    <form action="{{ url_for('user.kh_search') }}" method="GET" class="search-form">
+    <form action="{{ url_for('kh_search.search') }}" method="GET" class="search-form">
         <input type="text" name="q" placeholder="キーワードを入力…" value="{{ request.args.get('q', '') }}">
         <button type="submit" class="btn">検索</button>
     </form>
@@ -14,13 +15,8 @@
     <div class="search-results">
         {% if results %}
             {% for kh in results %}
-                <div class="card">
-                    <h3><a href="{{ url_for('user.kh_detail', id=kh.id) }}">{{ kh.title }}</a></h3>
-                    <p>投稿者: {{ kh.author_name }}</p>
-                </div>
+                {{ post_card(kh, url_for('kh_detail.show', knowhow_id=kh.id)) }}
             {% endfor %}
-        {% else %}
-            <p>一致するノウハウは見つかりませんでした。</p>
         {% endif %}
     </div>
 </div>
