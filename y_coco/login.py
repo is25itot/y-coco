@@ -1,26 +1,22 @@
-"""
-login.py
-ユーザーのログイン認証処理を行うモジュールです。
-"""
-
-from werkzeug.security import check_password_hash
-# db.py からユーザー取得関数をインポート（プロジェクトのDB構造に合わせて調整してください）
-from y_coco.db import get_user_by_username
-
 """login.py - ログイン機能 (FL11, FL12)
 
-ユーザー・管理者にログイン機能を提供し、ログイン状態かどうかを確認する。
-セッションには session["user"] = {"id", "imagepath", "admin_flg"} を格納する。
+ユーザー・管理者にログイン機能を提供する。
+ログイン状態の管理は flask-login に任せる (y_coco/auth.py を参照)。
+ログイン中のユーザー情報は current_user (id, username, imagepath, admin_flg) から参照する。
 """
+from urllib.parse import urlparse
+
 from flask import (Blueprint, flash, redirect, render_template, request,
-                   session, url_for)
+                   url_for)
+from flask_login import current_user, login_user
 from werkzeug.security import check_password_hash
 
-from y_coco import db
+from y_coco.auth import User, find_user_by_username
 
 login_bp = Blueprint("login", __name__, template_folder="templates")
 
 LOGIN_TEMPLATE = "login.html"
+AFTER_LOGIN_ENDPOINT = "event_list.index"
 
 MAX_USERNAME_LENGTH = 10   # users.username VARCHAR(10)
 MAX_PASSWORD_LENGTH = 64   # validation.py の上限
@@ -31,27 +27,12 @@ MSG_OTHER_ACCOUNT = "別のアカウントでログイン中です。先にロ�
 
 
 def is_logged_in():
-    """セッションを参照してログイン状態かを返す (login_flg)。"""
-    return bool(session.get("user"))
-
-
-def find_user_by_username(username):
-    """ユーザーテーブルを検索する。存在しなければ None。"""
-    conn = db.get_connection()
-    try:
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT id, username, passhash, imagepath, admin_flg "
-                "FROM users WHERE username = %s",
-                (username,),
-            )
-            return cur.fetchone()
-    finally:
-        conn.close()
+    """ログイン状態かを返す (login_flg)。"""
+    return current_user.is_authenticated
 
 
 def authenticate(username, password):
-    """ユーザー名とパスワードを検証し、一致したユーザー行を返す。失敗時は None。
+    """ユーザー名とパスワードを検証し、一致したユーザー行(dict)を返す。失敗時は None。
 
     アカウント不在とパスワード不一致を区別しない (ユーザー名の存在を推測させない)。
     """
@@ -65,74 +46,41 @@ def authenticate(username, password):
     return user
 
 
-def build_session_user(user):
-    """セッションに保存するユーザー情報を作る。"""
-    return {
-        "id": user["id"],
-        "imagepath": user["imagepath"],
-        "admin_flg": bool(user["admin_flg"]),
-    }
+def _redirect_after_login():
+    """ログイン後の遷移先。@login_required から来た場合は元のページへ戻す。"""
+    next_url = request.args.get("next", "")
+    # オープンリダイレクト対策: 同一サイト内の相対パスのみ許可する
+    parsed = urlparse(next_url)
+    if next_url.startswith("/") and not next_url.startswith("//") and not parsed.netloc:
+        return redirect(next_url)
+    return redirect(url_for(AFTER_LOGIN_ENDPOINT))
 
 
 @login_bp.route("/login", methods=["GET", "POST"])
 def login():
-    login_flg = is_logged_in()
-
+    # login_flg はテンプレートへ app.py の context_processor が自動で渡す
     if request.method == "GET":
-        return render_template(LOGIN_TEMPLATE, login_flg=login_flg)
+        return render_template(LOGIN_TEMPLATE)
 
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
 
     if not username or not password:
         flash(MSG_EMPTY, "error")
-        return render_template(LOGIN_TEMPLATE, login_flg=login_flg, username=username)
+        return render_template(LOGIN_TEMPLATE, username=username)
 
     # ログイン中: 同じアカウントなら処理をスキップ、別アカウントはエラー
-    if login_flg:
+    if current_user.is_authenticated:
         user = find_user_by_username(username)
-        if user is not None and user["id"] == session["user"]["id"]:
-            return redirect(url_for("event_list.index"))
+        if user is not None and user["id"] == current_user.id:
+            return redirect(url_for(AFTER_LOGIN_ENDPOINT))
         flash(MSG_OTHER_ACCOUNT, "error")
-        return render_template(LOGIN_TEMPLATE, login_flg=login_flg, username=username)
+        return render_template(LOGIN_TEMPLATE, username=username)
 
     user = authenticate(username, password)
     if user is None:
         flash(MSG_INVALID, "error")
-        return render_template(LOGIN_TEMPLATE, login_flg=False, username=username)
+        return render_template(LOGIN_TEMPLATE, username=username)
 
-    session.clear()  # セッション固定化対策
-    session["user"] = build_session_user(user)
-    return redirect(url_for("event_list.index"))
-def authenticate_user(username, password):
-    """
-    入力されたユーザーネームとパスワードを検証し、認証結果を返します。
-
-    Parameters:
-        username (str): 入力されたユーザーネーム
-        password (str): 入力された平文パスワード
-
-    Returns:
-        tuple: (success: bool, message_or_user: str | dict)
-            - 成功時: (True, user_dict)
-            - 失敗時: (False, "エラーメッセージ")
-    """
-    # 必須項目の入力チェック
-    if not username or not password:
-        return False, "ユーザーネームとパスワードを入力してください。"
-
-    # データベースからユーザー情報を取得
-    user = get_user_by_username(username)
-    if not user:
-        # セキュリティ上、ユーザーが存在しない場合も一般的なエラーメッセージを返す
-        return False, "ユーザーネームまたはパスワードが正しくありません。"
-
-    # パスワードハッシュの検証
-    # （DB側のカラム名に合わせて user['password_hash'] または user['password'] を参照）
-    stored_hash = user.get('password_hash') or user.get('password')
-
-    if not stored_hash or not check_password_hash(stored_hash, password):
-        return False, "ユーザーネームまたはパスワードが正しくありません。"
-
-    # 認証成功（ユーザー情報を返す）
-    return True, user
+    login_user(User(user))
+    return _redirect_after_login()

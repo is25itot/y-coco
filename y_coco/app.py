@@ -9,12 +9,14 @@ y-coco(地域情報発信アプリ)のFlaskアプリ本体。
     python -m y_coco.app
 """
 from flask import Blueprint, Flask, render_template
+from flask_login import current_user
 from flask_wtf.csrf import CSRFProtect
 
 from y_coco import config
 from y_coco import detail, kh_detail, kh_list, kh_search, login, logout, search
 from y_coco import list as list_views
 from y_coco.admin import admin_views
+from y_coco.auth import login_manager
 from y_coco.user import user_views
 from y_coco.user.event import comment as event_comment
 from y_coco.user.event import post as event_post
@@ -69,7 +71,15 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     csrf_protect.init_app(app)
+    login_manager.init_app(app)   # flask-login (SECRET_KEY が必要)
     register_blueprints(app)
+
+    @app.context_processor
+    def inject_login_state():
+        """全テンプレートに login_flg を渡す。
+        ユーザー情報は flask-login が自動で渡す current_user を使う。
+        """
+        return {"login_flg": current_user.is_authenticated}
 
     @app.route("/")
     def index():
