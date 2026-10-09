@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ユーザーのアイコン画像の保存先ディレクトリ　完成品にはいらんがGithubにあげたくないので
+uploads/
