@@ -1,25 +1,27 @@
 {% extends "base.html" %}
-{% from "_macros.html" import post_card %}
 {% set show_footer = true %}
 {% set active_tab = 'event' %}
 {% set header_mode = 'back' %}
+{% set header_title = '検索' %}
+{% set back_url = url_for('event_list.index') %}
+{% block title %}イベント検索 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>イベント検索</h2>
-     <form action="{{ url_for('event_search.search') }}" method="GET" class="search-form">
-        <input type="text" name="q" placeholder="キーワードを入力…" value="{{ request.args.get('q', '') }}">
-        <button type="submit" class="btn">検索</button>
-    </form>
+{% from "_macros.html" import post_card %}
+<form action="{{ url_for('event_search.search') }}" method="get" class="search-form">
+  <input type="text" name="q" maxlength="100" placeholder="キーワードを入力…" value="{{ query or '' }}">
+  <button type="submit" class="btn">検索する</button>
+</form>
 
-    <div class="search-results">
-        {% if results %}
-            {% for event in results %}
-                {{ post_card(event, url_for('event_detail.show', event_id=event.id), with_image=True) }}
-            {% endfor %}
-        {% elif searched %}
-            <p class="empty-message">{{ message }}</p>
-        {% endif %}
-    </div>
-</div>
+{% if searched %}
+  <div style="margin-top:20px">
+  {% if results %}
+    {% for event in results %}
+      {{ post_card(event, url_for('event_detail.show', event_id=event.id), with_image=True) }}
+    {% endfor %}
+  {% else %}
+    <p class="empty-message">{{ message }}</p>
+  {% endif %}
+  </div>
+{% endif %}
 {% endblock %}

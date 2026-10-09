@@ -1,23 +1,24 @@
 {% extends "base.html" %}
-{% from "_macros.html" import post_card %}
 {% set show_footer = true %}
 {% set active_tab = 'knowhow' %}
 {% set header_mode = 'back' %}
+{% set header_title = '検索' %}
+{% set back_url = url_for('kh_list.index') %}
+{% block title %}ノウハウ検索 | y-coco{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>ノウハウ検索</h2>
-    <form action="{{ url_for('kh_search.search') }}" method="GET" class="search-form">
-        <input type="text" name="q" placeholder="キーワードを入力…" value="{{ request.args.get('q', '') }}">
-        <button type="submit" class="btn">検索</button>
-    </form>
+{% from "_macros.html" import post_card %}
+<form action="{{ url_for('kh_search.search') }}" method="get" class="search-form">
+  <input type="text" name="q" maxlength="100" placeholder="キーワードを入力…" value="{{ query or '' }}">
+  <button type="submit" class="btn">検索する</button>
+</form>
 
-    <div class="search-results">
-        {% if results %}
-            {% for kh in results %}
-                {{ post_card(kh, url_for('kh_detail.show', knowhow_id=kh.id)) }}
-            {% endfor %}
-        {% endif %}
-    </div>
-</div>
+{# 該当なしは flash でエラー表示され、入力欄は空に戻る #}
+{% if results %}
+  <div style="margin-top:20px">
+    {% for kh in results %}
+      {{ post_card(kh, url_for('kh_detail.show', knowhow_id=kh.id)) }}
+    {% endfor %}
+  </div>
+{% endif %}
 {% endblock %}

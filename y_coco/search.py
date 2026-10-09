@@ -105,12 +105,13 @@ def search():
         return redirect(url_for("login.login"))
 
     template = ADMIN_TEMPLATE if current_user.admin_flg else USER_TEMPLATE
+    userid = current_user.id
     query = request.args.get("q", "").strip()[:MAX_QUERY_LENGTH]
 
     if not query:
         return render_template(
             template, query="", words=[], results=[], searched=False,
-            has_result=False, message=None, userid=current_user.id,
+            has_result=False, message=None, userid=userid,
         )
 
     words = split_words(query)
@@ -124,5 +125,5 @@ def search():
         searched=True,
         has_result=has_result,
         message=None if has_result else MSG_NO_RESULT,
-        userid=current_user.id,
+        userid=userid,
     )
