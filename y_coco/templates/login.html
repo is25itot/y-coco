@@ -22,7 +22,8 @@
     <input id="password" name="password" type="password" maxlength="64" required
            placeholder="パスワードを入力…" autocomplete="current-password">
     <button type="submit" class="btn">ログイン</button>
+    <a href="{{ url_for('user.register_view') }}"><u>アカウントをお持ちでない方はこちら</u></a></u></a></p>
   </form>
-  <a href="{{ url_for('user.register_view') }}"><u>アカウントをお持ちでない方はこちら</u></a></u></a></p>
+  
 {% endif %}
 {% endblock %}
