@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% set header_mode = 'back' %}
+{% set show_footer = True %}
+
 {% block title %}{{ event.title }} | y-coco{% endblock %}
 {% block content %}
   {% include "event_body.html" %}
