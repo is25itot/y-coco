@@ -27,7 +27,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ---- ヘッダー ---- */
 .app-header {
-  position: sticky; top: 0; z-index: 10;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
   height: 64px;
   /* 背景は全幅、中身は本文と同じ幅に揃える */
   padding: 0 max(var(--gutter), calc((100% - var(--content-w)) / 2 + var(--gutter)));
@@ -61,9 +61,9 @@ a { color: inherit; text-decoration: none; }
 /* ---- 本体 ---- */
 .page-shell { min-height: 100vh; }               /* max-width を削除 */
 main.container {
-  max-width: var(--content-w);                   /* ★追加 */
-  margin: 0 auto;                                /* ★追加 */
-  padding: 14px var(--gutter) 110px;
+  max-width: var(--content-w);
+  margin: 0 auto;
+  padding: calc(64px + 14px) var(--gutter) 110px;   /* 上: ヘッダー高さ + 余白 */
 }
 main.container.no-footer { padding-bottom: 32px; }
 
