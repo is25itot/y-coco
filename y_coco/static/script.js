@@ -35,10 +35,32 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".flash.success, .flash.message").forEach(function (el) {
     setTimeout(function () { el.style.display = "none"; }, 4000);
   });
+
+  // 二重送信防止: 送信した時点でボタンを無効化する
+  document.querySelectorAll("form[data-single-submit]").forEach(function (form) {
+    form.addEventListener("submit", function () {
+      if (form.dataset.submitting === "1") {
+        return false;  // すでに送信中
+      }
+      form.dataset.submitting = "1";
+      form.querySelectorAll("button[type=submit]").forEach(function (btn) {
+        // 送信処理の開始後に無効化する(同期的に無効化しても送信は止まらないが念のため)
+        setTimeout(function () { btn.disabled = true; }, 0);
+      });
+    });
+  });
 });
 
 // 戻る/進む操作で表示されたとき、投稿フォームの入力内容を空にする
 window.addEventListener("pageshow", function (e) {
+  // 送信中状態を解除する(戻る操作でボタンが無効のまま復元されるのを防ぐ)
+  document.querySelectorAll("form[data-single-submit]").forEach(function (form) {
+    form.dataset.submitting = "0";
+    form.querySelectorAll("button[type=submit]").forEach(function (btn) {
+      btn.disabled = false;
+    });
+  });
+
   var nav = performance.getEntriesByType("navigation")[0];
   var isBack = e.persisted || (nav && nav.type === "back_forward");
   if (!isBack) return;

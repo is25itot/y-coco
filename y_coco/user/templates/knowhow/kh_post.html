@@ -8,7 +8,7 @@
 {% if kh_er_message %}
 <div class="flash error" style="white-space:pre-line">{{ kh_er_message }}</div>
 {% endif %}
-<form method="post" enctype="multipart/form-data" class="form-card" autocomplete="off" data-clear-on-back>
+<form method="post" class="form-card" autocomplete="off" data-clear-on-back data-single-submit>
   {{ csrf() }}
   <label for="title">タイトル</label>
   <input id="title" name="title" type="text" maxlength="50" required value="{{ form.title.data or '' }}">
