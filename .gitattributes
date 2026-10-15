@@ -1,3 +1,15 @@
-* text = auto
+# 改行コード
+* text=auto
 
-* text eol=lf
+# テキストファイル指定
+*.txt      text
+*.md       text
+*.json     text
+*.js       text
+*.py       text
+*.sh       text eol=lf
+
+# バイナリファイル指定
+*.png      binary
+*.jpg      binary
+*.pdf      binary
