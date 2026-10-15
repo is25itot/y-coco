@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release package
+        run: |
+          mkdir -p dist/y-coco
+          cp -r y_coco dist/y-coco/
+          cp create_admin.py schema.sql requirements.txt README.md dist/y-coco/
+          # 不要なものを除く
+          find dist -name "__pycache__" -type d -prune -exec rm -rf {} +
+          find dist -name "*.pyc" -delete
+          rm -rf dist/y-coco/y_coco/static/uploads/*
+          cd dist && zip -r ../y-coco-${{ github.ref_name }}.zip y-coco
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: y-coco-${{ github.ref_name }}.zip
+          generate_release_notes: true
