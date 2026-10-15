@@ -8,9 +8,12 @@ y-coco(地域情報発信アプリ)のFlaskアプリ本体。
     または
     python -m y_coco.app
 """
+
+import os
 from flask import Blueprint, Flask, render_template
 from flask_login import current_user
 from flask_wtf.csrf import CSRFProtect
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from y_coco import config
 from y_coco import detail, kh_detail, kh_list, kh_search, login, logout, search
@@ -75,6 +78,9 @@ def create_app(test_config=None):
     csrf_protect.init_app(app)
     login_manager.init_app(app)   # flask-login (SECRET_KEY が必要)
     register_blueprints(app)
+
+    if os.environ.get("BEHIND_PROXY") == "1":
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
     @app.context_processor
     def inject_login_state():
