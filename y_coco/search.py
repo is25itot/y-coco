@@ -79,7 +79,8 @@ def search_events(words):
         "SELECT e.id, e.user_id, e.title, e.description, e.imagepath, "
         "e.`datetime`, u.username, u.imagepath AS usericon "
         "FROM event_post e JOIN users u ON u.id = e.user_id "
-        f"WHERE e.`datetime` >= CURDATE() AND ({conditions}) "
+        # search.py(f文の WHERE 部分)
+        f"WHERE ({conditions}) "
         "ORDER BY e.id DESC"
     )
 

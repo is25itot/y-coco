@@ -16,12 +16,11 @@ ADMIN_TEMPLATE = "event/admin_event_list.html"
 SUMMARY_LIMIT = 50
 MSG_EMPTY = "イベントはまだ投稿されていません。"
 
+# list.py
 EVENT_LIST_SQL = """
-SELECT e.id, e.user_id, e.title, e.description, e.imagepath,
-       e.`datetime`, u.username, u.imagepath AS usericon
+SELECT e.id, e.user_id, e.title, e.description, e.imagepath, e.`datetime`, u.username, u.imagepath AS usericon
 FROM event_post e
 JOIN users u ON u.id = e.user_id
-WHERE e.`datetime` >= CURDATE()
 ORDER BY e.id DESC
 """
 
