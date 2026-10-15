@@ -16,3 +16,5 @@
 
 # リリースでの除外設定
 tests/ export-ignore
+
+*_pytest.ini export-ignore
