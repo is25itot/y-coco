@@ -18,10 +18,13 @@
 {%- endmacro %}
 
 
-{# 一覧のカード。item: id/title/summary/username/usericon/(imagepath) #}
+{# 一覧のカード。item: id/title/summary/username/usericon/(imagepath)/(datetime) #}
 {% macro post_card(item, href, with_image=False) -%}
 <a class="card post-card card-link" href="{{ href }}">
   <div>
+    {% if item.datetime %}
+    <div class="event-date">開催日:{{ fmt(item.datetime, '%Y/%m/%d') }}</div>
+    {% endif %}
     <div class="title">{{ item.title }}</div>
     <div class="summary">{{ item.summary }}</div>
     <div class="post-meta">{{ avatar(item.usericon) }}<span>{{ item.username }}</span></div>

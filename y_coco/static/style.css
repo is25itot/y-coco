@@ -76,6 +76,7 @@ main.container.no-footer { padding-bottom: 32px; }
 .post-card { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; }
 .post-card .title { font-weight: bold; word-break: break-word; }
 .post-card .summary { font-size: .9rem; word-break: break-word; }
+.post-card .event-date { font-size: .8rem; color: var(--muted); font-weight: bold; }
 .post-card .thumb {
   width: 84px; height: 84px; object-fit: cover; border-radius: 8px; border: 1px solid #333;
 }
