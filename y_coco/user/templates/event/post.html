@@ -11,42 +11,40 @@
 {% if ev_er_message %}
 <div class="flash error" style="white-space:pre-line">{{ ev_er_message }}</div>
 {% endif %}
-<form method="post" enctype="multipart/form-data" class="form-card">
-  {{ csrf() }}
-  <label for="title">タイトル</label>
-  <input id="title" name="title" type="text" maxlength="50" required
-         value="{{ form.title.data or '' }}">
+<form method="post" enctype="multipart/form-data" class="form-card" autocomplete="off" data-clear-on-back>
+       {{ csrf() }}
+       <label for="title">タイトル</label>
+       <input id="title" name="title" type="text" maxlength="50" required value="{{ form.title.data or '' }}">
 
-  <label for="dt">開催日</label>
-  <input id="dt" name="dt" type="date" required value="{{ form.dt.data or '' }}">
+       <label for="dt">開催日</label>
+       <input id="dt" name="dt" type="date" required value="{{ form.dt.data or '' }}">
 
-  <label for="location">開催場所</label>
-  <input id="location" name="location" type="text" maxlength="100" required
-         value="{{ form.location.data or '' }}">
+       <label for="location">開催場所</label>
+       <input id="location" name="location" type="text" maxlength="100" required value="{{ form.location.data or '' }}">
 
-  <label for="address">住所</label>
-  <input id="address" name="address" type="text" maxlength="100"
-         value="{{ request.form.get('address', '') }}">
+       <label for="address">住所</label>
+       <input id="address" name="address" type="text" maxlength="100"
+              value="{{ request.form.get('address', '') }}">
 
-  <label for="desc">詳細</label>
-  <textarea id="desc" name="desc" class="field" maxlength="5000" required>{{ form.desc.data or '' }}</textarea>
+       <label for="desc">詳細</label>
+       <textarea id="desc" name="desc" class="field" maxlength="5000" required>{{ form.desc.data or '' }}</textarea>
 
-  <label for="fee">参加費(円・空欄は無料)</label>
-  <input id="fee" name="fee" type="number" min="0" value="{{ request.form.get('fee', '') }}">
+       <label for="fee">参加費(円・空欄は無料)</label>
+       <input id="fee" name="fee" type="number" min="0" value="{{ request.form.get('fee', '') }}">
 
-  <label for="parking_info">駐車場</label>
-  <input id="parking_info" name="parking_info" type="text" maxlength="100"
-         value="{{ request.form.get('parking_info', '') }}">
+       <label for="parking_info">駐車場</label>
+       <input id="parking_info" name="parking_info" type="text" maxlength="100"
+              value="{{ request.form.get('parking_info', '') }}">
 
-  <label for="contact_info">お問い合わせ</label>
-  <input id="contact_info" name="contact_info" type="text" maxlength="255"
-         value="{{ request.form.get('contact_info', '') }}">
+       <label for="contact_info">お問い合わせ</label>
+       <input id="contact_info" name="contact_info" type="text" maxlength="255"
+              value="{{ request.form.get('contact_info', '') }}">
 
-  <label for="image">画像(1MBまで)</label>
-  <input id="image" name="image" type="file" data-preview="preview"
-         accept="image/png,image/jpeg,image/gif,image/webp">
-  <img id="preview" class="image-preview" alt="">
+       <label for="image">画像(1MBまで)</label>
+       <input id="image" name="image" type="file" data-preview="preview"
+              accept="image/png,image/jpeg,image/gif,image/webp">
+       <img id="preview" class="image-preview" alt="">
 
-  <button type="submit" class="btn">投稿</button>
+       <button type="submit" class="btn">投稿</button>
 </form>
 {% endblock %}

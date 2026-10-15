@@ -43,6 +43,11 @@ knowhow_post_bp = Blueprint(
     template_folder="../templates",
 )
 
+@knowhow_post_bp.after_request
+def add_no_store(response):
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
 # --- 定数 -------------------------------------------------------------
 CODE_SUCCESS = 0
 CODE_POST_FAILED = 4

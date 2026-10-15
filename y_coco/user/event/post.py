@@ -45,6 +45,12 @@ event_post_bp = Blueprint(
     template_folder="../templates",
 )
 
+@event_post_bp.after_request
+def add_no_store(response):
+    """戻るボタンで入力済みフォームが再表示されないようにする。"""
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
 # --- 定数 -------------------------------------------------------------
 CODE_SUCCESS = 0
 CODE_POST_FAILED = 3

@@ -10,6 +10,24 @@ document.addEventListener("DOMContentLoaded", function () {
     grow();
   });
 
+// 戻る/進む操作で表示されたとき、投稿フォームの入力内容を空にする
+window.addEventListener("pageshow", function (e) {
+  var nav = performance.getEntriesByType("navigation")[0];
+  var isBack = e.persisted || (nav && nav.type === "back_forward");
+  if (!isBack) return;
+
+  document.querySelectorAll("form[data-clear-on-back]").forEach(function (form) {
+    form.querySelectorAll("input, textarea").forEach(function (el) {
+      if (el.type === "hidden" || el.type === "submit") return;
+      el.value = "";
+    });
+    form.querySelectorAll(".image-preview").forEach(function (img) {
+      img.style.display = "none";
+      img.removeAttribute("src");
+    });
+  });
+});
+
   // 画像選択: プレビュー表示 (5MB 超は選択時に警告)
   document.querySelectorAll("input[type=file][data-preview]").forEach(function (input) {
     var img = document.getElementById(input.dataset.preview);
