@@ -17,6 +17,7 @@
   <input id="repassword" name="repassword" type="password" maxlength="64" required
          placeholder="パスワードをもう一度入力…" autocomplete="new-password">
   <button type="submit" class="btn">登録</button>
+  <p class="right-align" style="margin-top:18px"><a href="{{ url_for('login.login') }}"><u>ログインはこちら</u></a></p>
 </form>
-<p class="right-align" style="margin-top:18px"><a href="{{ url_for('login.login') }}"><u>ログインはこちら</u></a></p>
+
 {% endblock %}
