@@ -2,6 +2,9 @@
 
 {% block title %}y-coco{% endblock %}
 {% block content %}
+<div class="start-logo">
+    <img src="{{ url_for('static', filename='images/y-coco.png') }}" alt="y-coco">
+</div>
 <a class="btn big" href="{{ url_for('login.login') }}">ログイン</a>
 <a class="btn big" href="{{ url_for('user.register_view') }}">新規登録</a>
 {% endblock %}
