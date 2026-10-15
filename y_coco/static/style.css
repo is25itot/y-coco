@@ -183,6 +183,15 @@ textarea.field { min-height: 140px; resize: vertical; }
 .app-footer svg { width: 38px; height: 38px; fill: #fff; }
 
 
+/* ---- スタート画面のロゴ ---- */
+.start-logo { text-align: center; margin: 24px 0 36px; }
+.start-logo img {
+  width: 100%;
+  max-width: 220px;   /* PCで大きくなりすぎないように */
+  height: auto;
+}
+
+
 /* ---- PC向けの調整 ---- */
 /* フォーム・ボタンが横に伸びすぎないようにする */
 .form-card { max-width: 560px; margin: 0 auto; }
