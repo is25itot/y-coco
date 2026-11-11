@@ -8,7 +8,7 @@
 
 
 def _open_connection():
-    from db import get_connection
+    from y_coco.db import get_connection
     return get_connection()
 
 

@@ -17,7 +17,7 @@ _tokenizer = None
 
 
 def _open_connection():
-    from db import get_connection
+    from y_coco.db import get_connection
     return get_connection()
 
 
@@ -57,7 +57,7 @@ def split_words(text):
         token = token.strip()
         if token and token not in words:
             words.append(token)
-    return words
+    return words or [text]  # 分割できなかった場合は文章全体を単語として扱う
 
 
 def escape_like(word):
