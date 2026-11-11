@@ -13,11 +13,11 @@
 前提: db.py に get_connection() があり、pymysql(DictCursor)の接続を返すこと。
 """
 
+# db.pyからPOST_TYPE_KNOWHOWをインポート
+from y_coco.db import POST_TYPE_KNOWHOW
+
 CODE_SUCCESS = 0
 CODE_FAILURE = 9
-
-# comment / notification テーブルの post_type の値(要確認: 設計書に値の定義なし)
-POST_TYPE_KNOWHOW = 2
 
 MSG_KNOWHOW_SUCCESS = "ノウハウを削除しました。"
 MSG_KNOWHOW_FAILURE = "ノウハウの削除に失敗しました。"
@@ -86,41 +86,26 @@ def delete_knowhow(knowhow_id, db_conn=None):
             conn.close()
 
 
-def delete_knowhow_comment(comment_id, db_conn=None):
-    """ノウハウに付いたコメントを1件削除する(イベントのコメントは対象外)。"""
+def get_knowhow_comment(comment_id, db_conn=None):
+    """ノウハウに付いたコメントを1件取得する(削除確認画面用)。無ければ None。"""
     target_id = _to_int(comment_id)
     if target_id is None:
-        return _result(CODE_FAILURE, MSG_COMMENT_FAILURE)
+        return None
 
     own_connection = db_conn is None
-    conn = None
+    conn = db_conn if db_conn is not None else _open_connection()
     try:
-        conn = db_conn if db_conn is not None else _open_connection()
         with conn.cursor() as cur:
             cur.execute(
-                "DELETE FROM comment WHERE id = %s AND post_type = %s",
+                "SELECT c.id, c.user_id, c.post_type, c.post_id, c.comment, "
+                "c.created_at, u.username, u.imagepath AS usericon "
+                "FROM comment c JOIN users u ON u.id = c.user_id "
+                "WHERE c.id = %s AND c.post_type = %s",
                 (target_id, POST_TYPE_KNOWHOW),
             )
-            deleted_count = cur.rowcount
-
-            cur.execute(
-                "SELECT id FROM comment WHERE id = %s AND post_type = %s",
-                (target_id, POST_TYPE_KNOWHOW),
-            )
-            still_exists = cur.fetchone() is not None
-
-        if still_exists or deleted_count < 1:
-            conn.rollback()
-            return _result(CODE_FAILURE, MSG_COMMENT_FAILURE)
-
-        conn.commit()
-        return _result(CODE_SUCCESS, MSG_COMMENT_SUCCESS)
-
-    except Exception:
-        _safe_rollback(conn)
-        return _result(CODE_FAILURE, MSG_COMMENT_FAILURE)
+            return cur.fetchone()
     finally:
-        if own_connection and conn is not None:
+        if own_connection:
             conn.close()
 
 
