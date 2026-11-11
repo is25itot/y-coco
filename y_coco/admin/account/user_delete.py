@@ -4,15 +4,13 @@
   成功 : コミット、code = 0
   失敗 : ロールバック、code = 7
 
-前提: db.py に get_connection() があり、pymysql(DictCursor)の接続を返すこと。
+画像ファイルの削除は Flask の設定に依存するため呼び出し側(admin_views.py)で行う。
+成功時は削除対象の画像ファイル名を result["image_files"] で返す。
 """
+from y_coco.db import POST_TYPE_EVENT, POST_TYPE_KNOWHOW
 
 CODE_SUCCESS = 0
 CODE_FAILURE = 7
-
-# comment / notification テーブルの post_type の値(要確認: 設計書に値の定義なし)
-POST_TYPE_EVENT = 1
-POST_TYPE_KNOWHOW = 2
 
 MSG_SUCCESS = "アカウントを削除しました。"
 MSG_FAILURE = "アカウントの削除に失敗しました。"
@@ -30,8 +28,20 @@ def _to_int(value):
         return None
 
 
-def _result(code, message, is_logged_out=False):
-    return {"code": code, "message": message, "is_logged_out": is_logged_out}
+def _result(code, message, is_logged_out=False, image_files=None):
+    return {
+        "code": code,
+        "message": message,
+        "is_logged_out": is_logged_out,
+        "image_files": image_files or [],
+    }
+
+
+def _collect_image_files(cur, user_id, user_imagepath):
+    """削除対象ユーザーのアイコンと、イベント投稿の画像ファイル名を集める。"""
+    cur.execute("SELECT imagepath FROM event_post WHERE user_id = %s", (user_id,))
+    files = [user_imagepath] + [r["imagepath"] for r in cur.fetchall()]
+    return [f for f in files if f]
 
 
 def _delete_related_data(cur, user_id):
@@ -82,7 +92,7 @@ def delete_user(user_id, db_conn=None, session_obj=None):
             ログイン中のユーザー本人なら、セッションを破棄してログアウトさせる
 
     Returns:
-        {"code": 0 or 7, "message": str, "is_logged_out": bool}
+        {"code": 0 or 7, "message": str, "is_logged_out": bool, "image_files": list}
     """
     target_id = _to_int(user_id)
     if target_id is None:
@@ -95,13 +105,15 @@ def delete_user(user_id, db_conn=None, session_obj=None):
         with conn.cursor() as cur:
             # 削除対象の確認(存在しない・管理者アカウントは削除しない)
             cur.execute(
-                "SELECT id, admin_flg FROM users WHERE id = %s", (target_id,)
+                "SELECT id, admin_flg, imagepath FROM users WHERE id = %s",
+                (target_id,),
             )
             target = cur.fetchone()
             if not target or target.get("admin_flg"):
                 conn.rollback()
                 return _result(CODE_FAILURE, MSG_FAILURE)
 
+            image_files = _collect_image_files(cur, target_id, target.get("imagepath"))
             _delete_related_data(cur, target_id)
             delete_posts_result = True  # 例外が出ていなければ成功扱い
 
@@ -115,7 +127,7 @@ def delete_user(user_id, db_conn=None, session_obj=None):
 
         conn.commit()
         is_logged_out = _force_logout(session_obj, target_id)
-        return _result(CODE_SUCCESS, MSG_SUCCESS, is_logged_out)
+        return _result(CODE_SUCCESS, MSG_SUCCESS, is_logged_out, image_files)
 
     except Exception:
         if conn is not None:
