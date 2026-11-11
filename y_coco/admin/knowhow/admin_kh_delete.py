@@ -86,26 +86,41 @@ def delete_knowhow(knowhow_id, db_conn=None):
             conn.close()
 
 
-def get_knowhow_comment(comment_id, db_conn=None):
-    """ノウハウに付いたコメントを1件取得する(削除確認画面用)。無ければ None。"""
+def delete_knowhow_comment(comment_id, db_conn=None):
+    """ノウハウに付いたコメントを1件削除する(イベントのコメントは対象外)。"""
     target_id = _to_int(comment_id)
     if target_id is None:
-        return None
+        return _result(CODE_FAILURE, MSG_COMMENT_FAILURE)
 
     own_connection = db_conn is None
-    conn = db_conn if db_conn is not None else _open_connection()
+    conn = None
     try:
+        conn = db_conn if db_conn is not None else _open_connection()
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT c.id, c.user_id, c.post_type, c.post_id, c.comment, "
-                "c.created_at, u.username, u.imagepath AS usericon "
-                "FROM comment c JOIN users u ON u.id = c.user_id "
-                "WHERE c.id = %s AND c.post_type = %s",
+                "DELETE FROM comment WHERE id = %s AND post_type = %s",
                 (target_id, POST_TYPE_KNOWHOW),
             )
-            return cur.fetchone()
+            deleted_count = cur.rowcount
+
+            cur.execute(
+                "SELECT id FROM comment WHERE id = %s AND post_type = %s",
+                (target_id, POST_TYPE_KNOWHOW),
+            )
+            still_exists = cur.fetchone() is not None
+
+        if still_exists or deleted_count < 1:
+            conn.rollback()
+            return _result(CODE_FAILURE, MSG_COMMENT_FAILURE)
+
+        conn.commit()
+        return _result(CODE_SUCCESS, MSG_COMMENT_SUCCESS)
+
+    except Exception:
+        _safe_rollback(conn)
+        return _result(CODE_FAILURE, MSG_COMMENT_FAILURE)
     finally:
-        if own_connection:
+        if own_connection and conn is not None:
             conn.close()
 
 
@@ -130,3 +145,26 @@ def _safe_rollback(conn):
         conn.rollback()
     except Exception:
         pass
+
+
+def get_knowhow_comment(comment_id, db_conn=None):
+    """ノウハウに付いたコメントを1件取得する(削除確認画面用)。無ければ None。"""
+    target_id = _to_int(comment_id)
+    if target_id is None:
+        return None
+
+    own_connection = db_conn is None
+    conn = db_conn if db_conn is not None else _open_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT c.id, c.user_id, c.post_type, c.post_id, c.comment, "
+                "c.created_at, u.username, u.imagepath AS usericon "
+                "FROM comment c JOIN users u ON u.id = c.user_id "
+                "WHERE c.id = %s AND c.post_type = %s",
+                (target_id, POST_TYPE_KNOWHOW),
+            )
+            return cur.fetchone()
+    finally:
+        if own_connection:
+            conn.close()
