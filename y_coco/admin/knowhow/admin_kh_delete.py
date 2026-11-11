@@ -13,11 +13,11 @@
 前提: db.py に get_connection() があり、pymysql(DictCursor)の接続を返すこと。
 """
 
+# db.pyからPOST_TYPE_KNOWHOWをインポート
+from y_coco.db import POST_TYPE_KNOWHOW
+
 CODE_SUCCESS = 0
 CODE_FAILURE = 9
-
-# comment / notification テーブルの post_type の値(要確認: 設計書に値の定義なし)
-POST_TYPE_KNOWHOW = 2
 
 MSG_KNOWHOW_SUCCESS = "ノウハウを削除しました。"
 MSG_KNOWHOW_FAILURE = "ノウハウの削除に失敗しました。"
@@ -26,7 +26,7 @@ MSG_COMMENT_FAILURE = "コメントの削除に失敗しました。"
 
 
 def _open_connection():
-    from db import get_connection
+    from y_coco.db import get_connection
     return get_connection()
 
 
@@ -145,3 +145,26 @@ def _safe_rollback(conn):
         conn.rollback()
     except Exception:
         pass
+
+
+def get_knowhow_comment(comment_id, db_conn=None):
+    """ノウハウに付いたコメントを1件取得する(削除確認画面用)。無ければ None。"""
+    target_id = _to_int(comment_id)
+    if target_id is None:
+        return None
+
+    own_connection = db_conn is None
+    conn = db_conn if db_conn is not None else _open_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT c.id, c.user_id, c.post_type, c.post_id, c.comment, "
+                "c.created_at, u.username, u.imagepath AS usericon "
+                "FROM comment c JOIN users u ON u.id = c.user_id "
+                "WHERE c.id = %s AND c.post_type = %s",
+                (target_id, POST_TYPE_KNOWHOW),
+            )
+            return cur.fetchone()
+    finally:
+        if own_connection:
+            conn.close()

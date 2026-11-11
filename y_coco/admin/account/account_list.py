@@ -3,7 +3,7 @@
 管理者がすべてのユーザーアカウントを閲覧する。
 SELECT文でユーザーテーブルを検索し、アカウントIDの降順で全件取得する。
 
-前提: db.py に get_connection() があり、pymysql(DictCursor)の接続を返すこと。
+前提: y_coco.db に get_connection() があり、pymysql(DictCursor)の接続を返すこと。
 """
 
 NO_ACCOUNT_MESSAGE = "アカウントがありません。"
@@ -11,7 +11,7 @@ NO_ACCOUNT_MESSAGE = "アカウントがありません。"
 
 def _open_connection():
     # テスト時に db.py(=DB接続)を読み込まなくて済むよう、使う直前にimportする
-    from db import get_connection
+    from y_coco.db import get_connection
     return get_connection()
 
 
